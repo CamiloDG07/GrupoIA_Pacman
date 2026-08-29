@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# LaTeX (artefactos de compilación)
+docs/latex/*.aux
+docs/latex/*.log
+docs/latex/*.out
+docs/latex/*.toc
+docs/latex/*.synctex.gz
+docs/latex/secciones/*.aux
+
+# Empaquetado final (se genera, no se versiona)
+entregable/*.zip
+
+# Editores
+.vscode/
+.idea/

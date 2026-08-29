@@ -1,0 +1,6 @@
+# El motor de Pac-Man (pacman/) solo usa la librería estándar de Python 3.
+# No hay dependencias obligatorias para correr las búsquedas.
+#
+# Estas son opcionales, solo para generar gráficas/tablas de los experimentos
+# fuera del propio Pac-Man (por ejemplo, para el informe):
+matplotlib>=3.8

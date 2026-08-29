@@ -1,0 +1,41 @@
+\subsection{Procedimiento y resultados}
+
+Se ejecutaron UCS y A* con \texttt{nullHeuristic} ($h(n)=0$) sobre \texttt{mediumClassic}, el
+layout de referencia adoptado desde la Actividad 3
+(ver \texttt{experimentos/actividad4\_astar\_nulo.py}).
+
+\begin{table}[H]
+\centering
+\caption{UCS vs. A* con heurística nula}
+\label{tab:act4-comparacion}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Algoritmo} & \textbf{Costo} & \textbf{Expandidos} & \textbf{Tiempo (s)} \\
+\midrule
+UCS & 12 & 69 & 0.000257 \\
+A* + $h(n)=0$ & 12 & 69 & 0.000222 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ambos algoritmos encuentran el mismo costo óptimo (12) y expanden exactamente el mismo número de
+nodos (69). La pequeña diferencia de tiempo entre ambas filas (0.000257s vs. 0.000222s) no es una
+diferencia algorítmica: es ruido de medición típico de intervalos tan cortos (microsegundos),
+donde el sistema operativo puede interrumpir brevemente el proceso; no depende de $h(n)$, ya que
+ambos algoritmos ejecutan exactamente las mismas operaciones cuando $h(n)=0$.
+
+\subsection{Pregunta de análisis}
+
+\textbf{¿Qué comportamiento observa? Explique por qué A* con $h(n)=0$ presenta un comportamiento
+equivalente o muy similar a búsqueda de costo uniforme.}
+
+La prioridad que usa A* para ordenar su frontera es $f(n) = g(n) + h(n)$. Si $h(n) = 0$ para
+\emph{todo} estado $n$ (como hace \texttt{nullHeuristic}), entonces $f(n) = g(n) + 0 = g(n)$ para
+cualquier nodo, sin excepción. Esa es exactamente la misma prioridad que usa UCS. Como ambos
+algoritmos usan la misma cola de prioridad y la misma prioridad para cada nodo, extraen los nodos
+de la frontera en el mismo orden, expanden los mismos nodos, y encuentran el mismo camino óptimo.
+
+Dicho de otra forma: UCS \emph{es} un caso particular de A* en el que la heurística usada es
+siempre cero. No es una coincidencia experimental ni una casualidad del layout: es una consecuencia
+directa de la definición de $f(n)$, y por eso el comportamiento se repite igual en los cinco
+layouts probados en la Actividad 3 (Cuadro~\ref{tab:act3-verificacion}).

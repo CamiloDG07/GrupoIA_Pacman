@@ -1,0 +1,19 @@
+Los algoritmos de busqueda son una herramienta fundamental de la Inteligencia Artificial para
+resolver problemas en los que un agente debe encontrar una secuencia de acciones que lo lleve
+desde un estado inicial hasta un estado objetivo. Cuando el agente no dispone de informacion
+adicional sobre la ubicacion de la meta, se habla de \textbf{busqueda no informada}; cuando se
+incorpora una funcion heuristica $h(n)$ que estima el costo restante hacia el objetivo, se habla
+de \textbf{busqueda informada}.
+
+En este laboratorio se utiliza el entorno de Pac-Man, provisto por el docente, como espacio
+experimental para implementar y analizar el algoritmo A* junto con distintas funciones
+heuristicas (nula, distancia Manhattan, distancia Euclidiana y heuristicas disenadas por el
+grupo para los problemas de las esquinas y de la busqueda de alimentos). El proposito central no
+es unicamente lograr que Pac-Man llegue al objetivo, sino comprender como la eleccion de la
+heuristica afecta la cantidad de estados expandidos y el costo de la solucion encontrada,
+preservando siempre la optimalidad mediante heuristicas admisibles y, cuando sea posible, consistentes.
+
+El codigo base del proyecto (\texttt{pacman.py}, \texttt{search.py}, \texttt{searchAgents.py},
+\texttt{util.py}, \texttt{layout.py}, entre otros) se mantiene sin modificar en su arquitectura;
+el trabajo del grupo consiste en completar unicamente las funciones que la guia de laboratorio
+senala como pendientes.

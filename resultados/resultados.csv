@@ -1,0 +1,33 @@
+actividad,metodo_heuristica,layout,costo,longitud_camino,nodos_expandidos,tiempo_seg,optimo
+10,A*+h(n)=0,tinySearch,8,8,16,0.000303,si
+10,A*+h(n)=0,testClassic,16,16,2598,0.061340,si
+10,UCS,tinySearch,8,8,16,0.000393,si
+10,UCS,testClassic,16,16,2598,0.063502,si
+11,H2_con_cache,testClassic,-,-,383,0.015458,si
+11,H2_con_cache,capsuleClassic,-,-,2185,0.207050,si
+11,H2_sin_cache,testClassic,-,-,383,0.014835,si
+11,H2_sin_cache,capsuleClassic,-,-,2185,0.193121,si
+11,Heuristica 1,tinySearch,8,8,8,0.000274,si
+11,Heuristica 1,testClassic,16,16,702,0.024714,si
+11,Heuristica 2,tinySearch,8,8,8,0.000237,si
+11,Heuristica 2,testClassic,16,16,383,0.014872,si
+11,h(n)=0,tinySearch,8,8,16,0.000437,si
+11,h(n)=0,testClassic,16,16,2598,0.070222,si
+2,UCS,mediumClassic,12,12,69,0.000492,si
+2,UCS,mediumMaze,30,30,32,0.000270,si
+2,UCS,tinyMaze,10,10,21,0.000182,si
+4,A*+h=0,mediumClassic,12,12,69,0.000222,si
+4,UCS,mediumClassic,12,12,69,0.000257,si
+5,A*+Manhattan,mediumClassic,12,12,15,0.000068,si
+5,UCS,mediumClassic,12,12,69,0.000251,si
+6,Euclidiana,mediumClassic,12,12,16,0.000070,si
+6,Manhattan,mediumClassic,12,12,15,0.000066,si
+6,h(n)=0,mediumClassic,12,12,69,0.000262,si
+7,UCS,tinyCorners,22,22,295,0.001300,si
+8,Heuristica basica,tinyCorners,22,22,147,0.000832,si
+8,Heuristica propuesta,tinyCorners,22,22,119,0.000802,si
+8,h(n)=0,tinyCorners,22,22,295,0.001486,si
+9,A* + h=0,tinyCorners,22,22,295,0.001887,si
+9,A* + heuristica basica,tinyCorners,22,22,147,0.001370,si
+9,A* + heuristica propuesta,tinyCorners,22,22,119,0.001297,si
+9,UCS,tinyCorners,22,22,295,0.002134,si

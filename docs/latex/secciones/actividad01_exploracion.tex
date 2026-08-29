@@ -1,0 +1,63 @@
+\subsection{Procedimiento}
+
+Siguiendo la guia, se ejecuto el entorno de Pac-Man en modo interactivo desde la carpeta del
+proyecto:
+
+\begin{verbatim}
+python pacman.py
+\end{verbatim}
+
+Pac-Man se controla con las flechas de direccion o con las teclas \texttt{W}, \texttt{A},
+\texttt{S}, \texttt{D}. Se observaron la posicion inicial del agente, la ubicacion de las
+paredes, los alimentos disponibles y los movimientos permitidos desde cada celda.
+
+Adicionalmente, para dejar evidencia reproducible (sin depender de la exploracion manual), se
+instancio programaticamente el mismo \texttt{PositionSearchProblem} que usa internamente
+\texttt{SearchAgent} (ver \texttt{experimentos/actividad1\_exploracion.py}), y se imprimieron sus
+componentes sobre el layout \texttt{tinyMaze.lay}:
+
+\begin{verbatim}
+[s0] Estado inicial:    (1, 7)
+[A]  Acciones disponibles en s0:
+     accion=South  -> sucesor=(1, 6)  costo_paso=1
+[G]  Prueba de objetivo isGoalState(s0) = False
+     Objetivo configurado en este problema: problem.goal = (1, 1)
+[C]  Costo: 1 por movimiento
+\end{verbatim}
+
+\subsection{Componentes del problema de busqueda}
+
+\begin{table}[H]
+\centering
+\caption{Componentes del problema de busqueda en el entorno Pac-Man}
+\label{tab:act1-componentes}
+\begin{tabular}{ll}
+\toprule
+\textbf{Elemento} & \textbf{Descripcion} \\
+\midrule
+Estado ($s$) & Posicion $(x, y)$ de Pac-Man dentro del laberinto. \\
+Estado inicial ($s_0$) & Posicion en la que Pac-Man aparece al iniciar (depende del layout; \\
+ & p. ej. $(1,7)$ en \texttt{tinyMaze}). \\
+Acciones ($A$) & $\{North, South, East, West\}$; una accion solo es legal si la celda \\
+ & vecina en esa direccion no es pared. \\
+Funcion sucesor ($T$) & \texttt{getSuccessors(state)}: por cada accion legal retorna la terna \\
+ & (estado sucesor, accion, costo del paso). \\
+Objetivo ($G$) & \texttt{isGoalState(state)}: en \texttt{PositionSearchProblem}, llegar a la \\
+ & posicion configurada como meta (por defecto $(1,1)$). \\
+Costo ($C$) & 1 por cada movimiento; el costo total de un plan es la suma de \\
+ & los costos de sus pasos, es decir, su longitud. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Analisis}
+
+El entorno Pac-Man encaja de forma natural en la formulacion general de un problema de busqueda
+$P = (S, A, T, s_0, G, C)$ presentada en la guia: el espacio de estados $S$ corresponde a las
+posiciones transitables del laberinto, las acciones $A$ estan restringidas por la geometria de
+las paredes, la funcion de transicion $T$ esta implementada por \texttt{getSuccessors}, y el
+costo $C$ es uniforme (1 por paso) en esta primera version del problema. Esta representacion
+minima --solo la posicion-- es suficiente para el problema de \emph{llegar a un punto fijo}, pero,
+como se vera en la Actividad 7, deja de ser suficiente en cuanto el objetivo depende de un
+historial (por ejemplo, ``haber visitado ya tres esquinas''), porque dos estados con la misma
+posicion $(x,y)$ dejarian de ser equivalentes.

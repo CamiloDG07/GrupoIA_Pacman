@@ -1,0 +1,142 @@
+\subsection{Punto de partida: h(n)=0}
+
+El archivo inicial trae \texttt{cornersHeuristic} devolviendo siempre \texttt{0}. Como senala la
+guia, esta funcion es admisible por definicion (nunca sobreestima nada) pero no aporta ninguna
+informacion util para orientar la busqueda: con ella, A* se comporta exactamente igual que UCS.
+
+\subsection{Heuristica basica}
+
+Se implemento primero la formula que sugiere la guia como primera aproximacion: la distancia
+Manhattan a la esquina pendiente mas lejana.
+
+$$h(n) = \max_{c \in C_p} d_M(n, c)$$
+
+donde $C_p$ es el conjunto de esquinas que todavia no se han visitado en el estado $n$ (si ya no
+queda ninguna esquina pendiente, $h(n) = 0$).
+
+\begin{verbatim}
+def cornersHeuristicBasica(state, problem):
+    position, visited = state
+    corners = problem.corners
+    pendientes = [c for c, v in zip(corners, visited) if not v]
+    if not pendientes:
+        return 0
+    distancias = (abs(position[0]-c[0]) + abs(position[1]-c[1])
+                  for c in pendientes)
+    return max(distancias)
+\end{verbatim}
+
+\subsection{Heuristica propuesta}
+
+Siguiendo la sugerencia de la guia de analizar ``si es posible disenar una heuristica mas
+informativa'', se generalizo la heuristica basica con el mismo patron de diametro que ya se habia
+usado en \texttt{foodHeuristic} (Actividad 11): en vez de mirar solo la distancia de Pac-Man a la
+esquina pendiente mas lejana, se considera el diametro --la mayor distancia Manhattan entre
+cualquier par-- del conjunto formado por la posicion actual mas todas las esquinas pendientes.
+
+$$h(n) = \max\Big(\max_{c \in C_p} d_M(n, c),\ \max_{c_i, c_j \in C_p} d_M(c_i, c_j)\Big)$$
+
+Es mas informativa que la basica porque tambien tiene en cuenta que, para visitar dos esquinas
+pendientes lejanas entre si, Pac-Man tiene que recorrer al menos la distancia real entre ellas en
+algun momento del camino --no solo la distancia desde su posicion actual hasta la mas lejana de
+las dos--.
+
+\begin{verbatim}
+def cornersHeuristic(state, problem):
+    position, visited = state
+    corners = problem.corners
+    pendientes = [c for c, v in zip(corners, visited) if not v]
+    if not pendientes:
+        return 0
+    puntos = [position] + pendientes
+    maxDist = 0
+    for i in range(len(puntos)):
+        for j in range(i + 1, len(puntos)):
+            p1, p2 = puntos[i], puntos[j]
+            d = abs(p1[0]-p2[0]) + abs(p1[1]-p2[1])
+            if d > maxDist:
+                maxDist = d
+    return maxDist
+\end{verbatim}
+
+A diferencia de \texttt{foodHeuristic}, aqui no se uso \texttt{problem.heuristicInfo} como cache:
+como mucho hay 4 esquinas (nunca mas de 6 pares), asi que el costo de recalcular todas las
+distancias entre pares en cada llamada es insignificante --muy distinto al caso de
+\texttt{FoodSearchProblem}, donde puede haber decenas de alimentos y cientos de pares--. Cachear
+aqui anadiria la misma sobrecarga de diccionario que en la Actividad 11 no compenso, sin ningun
+beneficio real dado lo pequeno del conjunto.
+
+\subsection{Admisibilidad}
+
+\textbf{Heuristica basica.} El costo real para visitar todas las esquinas pendientes es, como
+minimo, el costo de llegar hasta la esquina pendiente mas lejana --en algun momento del recorrido
+Pac-Man tiene que llegar hasta ella--, y la distancia Manhattan nunca sobreestima una distancia
+real en una cuadricula con paredes (cada paso real cambia $x$ o $y$ en una unidad; la distancia
+Manhattan es el minimo numero de esos pasos sin contar paredes). Por lo tanto $h(n) \le h^*(n)$.
+
+\textbf{Heuristica propuesta.} El recorrido que visita, en cualquier orden, la posicion $n$ y
+todas las esquinas de $C_p$ tiene una longitud real que es, como minimo, la distancia real entre
+el par de puntos mas separado entre si de $\{n\} \cup C_p$ --en algun momento del recorrido
+Pac-Man pasa por ambos puntos de ese par--. Como la distancia Manhattan nunca sobreestima la
+distancia real, el diametro en Manhattan de $\{n\} \cup C_p$ es una cota inferior valida:
+$h(n) \le h^*(n)$.
+
+Ambas cotas se verificaron tambien de forma empirica en el estado inicial de \texttt{tinyCorners}
+(ver el script de la Actividad 8 en \texttt{experimentos/}): $h_{basica}(inicio) = 6$ y
+$h_{propuesta}(inicio) = 12$, ambos por debajo del costo optimo real conocido (22, obtenido con
+UCS en la Actividad 7).
+
+\subsection{Consistencia (no exigida, se incluye por completitud)}
+
+Para cualquier sucesor $n'$ de $n$ (un paso ortogonal, costo 1), si el par de puntos que define
+$h(n)$ sigue intacto en $n'$ (ninguno de los dos era la esquina que se acaba de visitar al pasar
+de $n$ a $n'$), entonces por la desigualdad triangular de Manhattan
+$d_M(n, p) \le d_M(n, n') + d_M(n', p) = 1 + d_M(n', p) \le 1 + h(n')$ para el punto $p$
+correspondiente. Si uno de los dos puntos del par era justo la posicion $n$ (que cambia a $n'$) o
+una esquina que se acaba de visitar, el argumento se reduce al caso trivial
+$d_M(n, n') = 1 \le 1 + h(n')$, valido porque $h(n') \ge 0$ siempre. En consecuencia,
+$h(n) \le c(n, n') + h(n')$ se cumple en todos los casos, y $h(\text{meta}) = 0$ (no quedan
+esquinas pendientes). Ambas heuristicas son, entonces, tambien consistentes.
+
+\subsection{Procedimiento y resultados}
+
+Se ejecuto A* con las tres heuristicas sobre \texttt{tinyCorners} (ver el script de la
+Actividad 8 en \texttt{experimentos/}).
+
+\begin{table}[H]
+\centering
+\caption{A* sobre CornersProblem con distintas heuristicas (tinyCorners)}
+\label{tab:act8-heuristicas}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Heuristica} & \textbf{Costo} & \textbf{Longitud} & \textbf{Nodos expandidos} & \textbf{Tiempo (s)} \\
+\midrule
+$h(n)=0$              & 22 & 22 & 295 & 0.001486 \\
+Basica                & 22 & 22 & 147 & 0.000832 \\
+Propuesta             & 22 & 22 & 119 & 0.000802 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Las tres estrategias encuentran el mismo costo optimo (22, el mismo que dio UCS en la Actividad
+7), confirmando que ninguna de las dos heuristicas disenadas sobreestima el costo real. La
+heuristica basica reduce los nodos expandidos de 295 a 147 (49.8\,\% menos que $h=0$); la
+heuristica propuesta reduce aun mas, a 119 (59.7\,\% menos que $h=0$, y 19.0\,\% menos que la
+basica), confirmando que el termino adicional de distancia entre pares de esquinas pendientes si
+aporta informacion util a la busqueda.
+
+\subsection{Pregunta de análisis}
+
+\textbf{Explique por qué su heurística para \texttt{CornersProblem} es admisible.}
+
+Porque en ambos casos el valor que devuelve la heuristica es una distancia Manhattan (o el maximo
+de varias distancias Manhattan) entre puntos que, de todas formas, Pac-Man tiene que recorrer en
+algun momento para completar el objetivo --llegar a cada esquina pendiente, y en el caso de la
+heuristica propuesta, tambien recorrer la distancia entre pares de esquinas pendientes entre si--.
+Como la distancia Manhattan es, por construccion, una cota inferior de cualquier distancia real
+en una cuadricula con obstaculos (un camino real nunca es mas corto que la distancia en linea
+recta por cuadricula, porque cada paso real cambia como maximo una coordenada en una unidad), el
+valor devuelto nunca puede ser mayor que el costo optimo real restante $h^*(n)$. No basta con decir
+``la heuristica funciona''\ --lo que hace que sea admisible es, especificamente, que cada termino
+del maximo es una distancia Manhattan entre dos puntos que forman parte, necesariamente, de
+cualquier solucion real desde ese estado.

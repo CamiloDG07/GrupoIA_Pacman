@@ -1,0 +1,15 @@
+actividad,metodo_heuristica,layout,costo,longitud_camino,nodos_expandidos,tiempo_seg,optimo
+10,A*+h(n)=0,tinySearch,8,8,16,0.000524,si
+10,A*+h(n)=0,testClassic,16,16,2598,0.079836,si
+10,UCS,tinySearch,8,8,16,0.000591,si
+10,UCS,testClassic,16,16,2598,0.082457,si
+11,H2_con_cache,capsuleClassic,-,-,2185,0.207050,si
+11,H2_con_cache,testClassic,-,-,383,0.015458,si
+11,H2_sin_cache,capsuleClassic,-,-,2185,0.193121,si
+11,H2_sin_cache,testClassic,-,-,383,0.014835,si
+11,Heuristica 1,testClassic,16,16,702,0.024714,si
+11,Heuristica 1,tinySearch,8,8,8,0.000274,si
+11,Heuristica 2,testClassic,16,16,383,0.014872,si
+11,Heuristica 2,tinySearch,8,8,8,0.000237,si
+11,h(n)=0,testClassic,16,16,2598,0.070222,si
+11,h(n)=0,tinySearch,8,8,16,0.000437,si
