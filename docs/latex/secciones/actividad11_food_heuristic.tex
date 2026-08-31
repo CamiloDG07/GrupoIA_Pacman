@@ -4,15 +4,12 @@ Es exactamente la fórmula que sugiere la guía como primera aproximación:
 $h(n) = \max_{f \in F} d_M(n, f)$, la distancia Manhattan desde la posición actual hasta el
 alimento restante más lejano.
 
-\begin{verbatim}
-def foodHeuristicV1(state, problem):
-    position, foodGrid = state
-    foodList = foodGrid.asList()
-    if not foodList:
-        return 0
-    return max(abs(position[0] - f[0]) + abs(position[1] - f[1])
-               for f in foodList)
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{capturas/actividad11_heuristica1.png}
+\caption{\texttt{foodHeuristicV1} en \texttt{pacman/searchAgents.py} (líneas 516-540).}
+\label{fig:act11-h1}
+\end{figure}
 
 \textbf{Admisibilidad:} el costo real para recoger toda la comida restante es, como mínimo, el
 costo de llegar hasta el alimento más lejano --en algún momento del recorrido Pac-Man tiene que
@@ -37,38 +34,14 @@ Es más informativa que la Heurística 1 porque también considera que, para vis
 lejanos entre sí, Pac-Man tiene que recorrer al menos la distancia real entre ellos en algún
 momento del camino --no solo la distancia desde su posición actual hasta el más lejano de los dos--.
 
-\begin{verbatim}
-def foodHeuristic(state, problem):
-    position, foodGrid = state
-    foodList = foodGrid.asList()
-    if not foodList:
-        return 0
-
-    if 'foodPairDistances' not in problem.heuristicInfo:
-        allFood = problem.start[1].asList()
-        distancias = {}
-        for i in range(len(allFood)):
-            for j in range(i + 1, len(allFood)):
-                f1, f2 = allFood[i], allFood[j]
-                d = abs(f1[0]-f2[0]) + abs(f1[1]-f2[1])
-                distancias[(f1, f2)] = d
-                distancias[(f2, f1)] = d
-        problem.heuristicInfo['foodPairDistances'] = distancias
-
-    distanciasComida = problem.heuristicInfo['foodPairDistances']
-
-    maxDist = 0
-    for f in foodList:
-        d = abs(position[0]-f[0]) + abs(position[1]-f[1])
-        if d > maxDist:
-            maxDist = d
-    for i in range(len(foodList)):
-        for j in range(i+1, len(foodList)):
-            d = distanciasComida[(foodList[i], foodList[j])]
-            if d > maxDist:
-                maxDist = d
-    return maxDist
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{capturas/actividad11_heuristica2.png}
+\caption{\texttt{foodHeuristic} (Heurística 2, con caché en \texttt{problem.heuristicInfo}) en
+\texttt{pacman/searchAgents.py} (líneas 543-608). El bloque
+\texttt{if 'foodPairDistances' not in problem.heuristicInfo} es el caché discutido más abajo.}
+\label{fig:act11-h2}
+\end{figure}
 
 \textbf{Admisibilidad:} el recorrido que visita, en cualquier orden, la posición $n$ y todos los
 alimentos de $F$ tiene una longitud real que es, como mínimo, la distancia real entre el par de

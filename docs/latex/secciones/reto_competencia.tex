@@ -1,0 +1,22 @@
+La guía pide que cada grupo diseñe una heurística propia para uno de los dos problemas
+(\texttt{CornersProblem} o \texttt{FoodSearchProblem}) y compita contra las heurísticas de los
+demás grupos, minimizando el número de nodos expandidos sin perder la optimalidad de la solución.
+
+\textbf{Estado actual: pendiente de decisión del grupo.} Ya se cuenta con material completo para
+competir con cualquiera de los dos problemas, con toda la documentación que exige la guía
+(nombre, idea, fórmula, implementación, admisibilidad, consistencia, costo, nodos expandidos,
+tiempo) ya redactada en las secciones correspondientes:
+
+\begin{itemize}
+\item \textbf{CornersProblem}: \texttt{cornersHeuristic} (Actividad 8), diámetro Manhattan de
+  \{posición\} $\cup$ \{esquinas pendientes\}: 119 nodos expandidos sobre \texttt{tinyCorners},
+  frente a 295 con $h(n)=0$ (factor $R=2.48$, Actividad 9).
+\item \textbf{FoodSearchProblem}: \texttt{foodHeuristic} (Actividad 11, Heurística 2) --el mismo
+  patrón de diámetro Manhattan, aplicado a \{posición\} $\cup$ \{comida restante\}--, 383 nodos
+  expandidos sobre \texttt{testClassic} frente a 2598 de $h(n)=0$ (factor $R=6.78$).
+\end{itemize}
+
+Falta únicamente que el grupo decida cuál de las dos presentar a la competencia entre grupos; una
+vez tomada esa decisión, esta sección se completa citando directamente la subsección
+correspondiente (Actividad 8 o Actividad 11) como la documentación formal del reto, sin necesidad
+de rehacer ningún cálculo.

@@ -7,30 +7,14 @@ no reexpandir un estado cuando ya se conoce un camino más barato, y la misma pr
 extraer el nodo de la frontera. La única diferencia es la prioridad usada para ordenar la
 frontera: en UCS es $g(n)$; en A* es $f(n) = g(n) + h(n)$.
 
-\begin{verbatim}
-def aStarSearch(problem, heuristic=nullHeuristic):
-    frontier = util.PriorityQueue()
-    startState = problem.getStartState()
-    startPriority = 0 + heuristic(startState, problem)
-    frontier.push((startState, [], 0), startPriority)
-    bestCost = {startState: 0}
-
-    while not frontier.isEmpty():
-        state, actions, cost = frontier.pop()
-        if cost > bestCost.get(state, float('inf')):
-            continue
-        if problem.isGoalState(state):
-            return actions
-        for successor, action, stepCost in problem.getSuccessors(state):
-            newCost = cost + stepCost
-            if newCost < bestCost.get(successor, float('inf')):
-                bestCost[successor] = newCost
-                priority = newCost + heuristic(successor, problem)
-                frontier.push(
-                    (successor, actions + [action], newCost),
-                    priority)
-    return []
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{capturas/actividad03_astar.png}
+\caption{Implementación de \texttt{aStarSearch} en \texttt{pacman/search.py} (líneas 178-211).
+Comparar con la Figura~\ref{fig:act02-ucs}: la única diferencia real es la línea de
+\texttt{priority = newCost + heuristic(...)}.}
+\label{fig:act03-astar}
+\end{figure}
 
 \begin{table}[H]
 \centering

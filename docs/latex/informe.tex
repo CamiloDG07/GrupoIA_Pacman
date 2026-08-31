@@ -8,7 +8,7 @@
 \usepackage{fancyhdr}
 \usepackage{titlesec}
 \usepackage{booktabs}
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
 \usepackage{verbatim}
 \usepackage{mathptmx}
 \usepackage{setspace}
@@ -31,6 +31,12 @@
 
 \begin{document}
 
+% Franjas alternadas (zebra striping) en TODAS las tablas del informe, para
+% distinguir cada fila de datos a simple vista: la fila de encabezado
+% (\toprule) queda blanca/sin colorear, y las filas de datos alternan gris
+% muy claro / blanco a partir de la fila 2.
+\rowcolors{2}{gray!12}{white}
+
 \begin{titlepage}
 \thispagestyle{empty}
 \centering
@@ -45,11 +51,12 @@
 {\fontsize{14}{17}\selectfont\textbf{LABORATORIO DE BUSQUEDA INFORMADA CON PAC-MAN:\\
 ALGORITMO A* Y DISENO DE HEURISTICAS}}\\[3.5cm]
 
-{\fontsize{12}{14}\selectfont\textbf{Inteligencia Artificial (SIST5036)}}\\[1.8cm]
+{\fontsize{12}{14}\selectfont\textbf{Inteligencia Artificial (SIST5036)}}\\[0.5cm]
+{\fontsize{12}{14}\selectfont Grupo 4}\\[1.3cm]
 
-{\fontsize{12}{14}\selectfont Camilo Díaz}\\[0.1cm]
-{\fontsize{12}{14}\selectfont Juan David}\\[0.1cm]
-{\fontsize{12}{14}\selectfont Mario}\\[0.3cm]
+{\fontsize{12}{14}\selectfont Juan David Andradé Gómez}\\[0.1cm]
+{\fontsize{12}{14}\selectfont Mario Jiménez López}\\[0.1cm]
+{\fontsize{12}{14}\selectfont Camilo Andrés Díaz García}\\[0.3cm]
 
 \vfill
 
@@ -97,6 +104,15 @@ ALGORITMO A* Y DISENO DE HEURISTICAS}}\\[3.5cm]
 
 \section{Actividad 11. Diseño de heurísticas para la búsqueda de alimentos}
 \input{secciones/actividad11_food_heuristic.tex}
+
+\section{Reto: Competencia de heurísticas}
+\input{secciones/reto_competencia.tex}
+
+\section{Resultados generales}
+\input{secciones/resultados_generales.tex}
+
+\section{Análisis final}
+\input{secciones/analisis_final.tex}
 
 \section{Conclusiones}
 \input{secciones/99_conclusiones.tex}

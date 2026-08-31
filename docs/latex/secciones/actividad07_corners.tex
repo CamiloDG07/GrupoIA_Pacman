@@ -18,39 +18,13 @@ diccionario de costos: las tuplas de booleanos cumplen ambas propiedades sin nin
 (a diferencia del \texttt{foodGrid} de \texttt{FoodSearchProblem}, que sí necesitó el contador de
 desempate documentado en la Actividad 3 precisamente porque no es comparable).
 
-\begin{verbatim}
-def getStartState(self):
-    esquinasVisitadas = (False, False, False, False)
-    return (self.startingPosition, esquinasVisitadas)
-
-def isGoalState(self, state):
-    _, esquinasVisitadas = state
-    return all(esquinasVisitadas)
-
-def getSuccessors(self, state):
-    successors = []
-    position, visited = state
-    direcciones = [Directions.NORTH, Directions.SOUTH,
-                   Directions.EAST, Directions.WEST]
-    for action in direcciones:
-        x, y = position
-        dx, dy = Actions.directionToVector(action)
-        nextx, nexty = int(x + dx), int(y + dy)
-        hitsWall = self.walls[nextx][nexty]
-
-        if not hitsWall:
-            nextPosition = (nextx, nexty)
-            nextVisited = visited
-            if nextPosition in self.corners:
-                idx = self.corners.index(nextPosition)
-                if not visited[idx]:
-                    nextVisited = visited[:idx] + (True,) + visited[idx+1:]
-            nextState = (nextPosition, nextVisited)
-            successors.append((nextState, action, 1))
-
-    self._expanded += 1
-    return successors
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{capturas/actividad07_corners.png}
+\caption{\texttt{getStartState}, \texttt{isGoalState} y \texttt{getSuccessors} de
+\texttt{CornersProblem} en \texttt{pacman/searchAgents.py} (líneas 273-351).}
+\label{fig:act07-corners}
+\end{figure}
 
 La meta se alcanza cuando \texttt{all(esquinas\_visitadas)} es verdadero --las 4 esquinas ya se
 visitaron--, sin importar en qué posición esté Pac-Man en ese momento. Cada sucesor recalcula la

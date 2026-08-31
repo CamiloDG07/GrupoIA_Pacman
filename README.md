@@ -1,7 +1,7 @@
 # Taller de Búsqueda Informada con Pac-Man — Inteligencia Artificial (SIST5036)
 
 **Universidad Sergio Arboleda** · Escuela de Ciencias Exactas e Ingeniería
-**Grupo:** Camilo Díaz, Juan David, Mario
+**Grupo:** 4 — Juan David Andradé Gómez, Mario Jiménez López, Camilo Andrés Díaz García
 **Guía de referencia:** `Taller_Busqueda_Informada.pdf` (Algoritmo A*, heurísticas, distancia Manhattan y Euclidiana)
 
 ## 1. Regla de oro del proyecto
@@ -40,6 +40,12 @@ explicarlo/mostrarlo en la sustentación) es combinar tres cosas:
 Adicionalmente, `docs/sustentacion/actividadNN.md` guarda, por actividad, la preparación para la
 exposición: qué parte del código es crítica, qué pasa si se modifica tal variable, y preguntas "trampa"
 típicas — esto es material de estudio del grupo, no se entrega al profesor.
+
+**Reparto de actividades** (por si el profesor pregunta quién hizo qué — se ve también en
+`git log --oneline`, un commit por actividad): Actividades 1-6 y unificación final, Juan David;
+Actividades 7-9 (problema de las esquinas), asumidas por Camilo ante imprevistos de Mario;
+Actividades 10-11 (búsqueda de todos los alimentos) y el Reto de heurísticas, Camilo. Todo el
+código vive únicamente en `pacman/` — no hay carpetas duplicadas por integrante ni por parte.
 
 ## 3. Estructura
 
@@ -108,15 +114,19 @@ python pacman.py -l trickyClassic -p AStarFoodSearchAgent -q
 El enunciado pide exactamente:
 
 ```
-GrupoXX_Pacman_AStar.zip
+Grupo04_Pacman_AStar.zip
 ├── search.py
 ├── searchAgents.py
 ├── resultados.csv
 └── informe.pdf
 ```
 
-`entregable/empaquetar.sh` genera ese zip a partir de `pacman/search.py`, `pacman/searchAgents.py`,
-`resultados/resultados.csv` y el PDF compilado de `docs/latex/informe.tex`.
+(archivos sueltos en la raíz del zip, tal como los muestra el enunciado — no dentro de una
+subcarpeta).
+
+`entregable/empaquetar.sh Grupo04` genera ese zip a partir de `pacman/search.py`,
+`pacman/searchAgents.py`, `resultados/resultados.csv` y el PDF compilado de
+`docs/latex/informe.tex`.
 
 ## 7. Sobre el repositorio de GitHub
 

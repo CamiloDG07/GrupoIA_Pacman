@@ -3,13 +3,12 @@
 \texttt{euclideanHeuristic} ya viene provista en \texttt{searchAgents.py} (tampoco fue necesario
 implementarla):
 
-\begin{verbatim}
-def euclideanHeuristic(position, problem, info={}):
-    xy1 = position
-    xy2 = problem.goal
-    return ((xy1[0] - xy2[0]) ** 2 +
-            (xy1[1] - xy2[1]) ** 2) ** 0.5
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{capturas/actividad06_euclidiana.png}
+\caption{\texttt{euclideanHeuristic} en \texttt{pacman/searchAgents.py} (líneas 242-246).}
+\label{fig:act06-euclidiana}
+\end{figure}
 
 Calcula $h_E(n) = \sqrt{(x_n-x_g)^2 + (y_n-y_g)^2}$: la distancia en línea recta entre $n$ y la
 meta, ignorando también las paredes (por lo tanto también es admisible, por el mismo argumento que

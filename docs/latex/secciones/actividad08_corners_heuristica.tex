@@ -14,17 +14,12 @@ $$h(n) = \max_{c \in C_p} d_M(n, c)$$
 donde $C_p$ es el conjunto de esquinas que todavia no se han visitado en el estado $n$ (si ya no
 queda ninguna esquina pendiente, $h(n) = 0$).
 
-\begin{verbatim}
-def cornersHeuristicBasica(state, problem):
-    position, visited = state
-    corners = problem.corners
-    pendientes = [c for c, v in zip(corners, visited) if not v]
-    if not pendientes:
-        return 0
-    distancias = (abs(position[0]-c[0]) + abs(position[1]-c[1])
-                  for c in pendientes)
-    return max(distancias)
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{capturas/actividad08_heuristica_basica.png}
+\caption{\texttt{cornersHeuristicBasica} en \texttt{pacman/searchAgents.py} (líneas 367-396).}
+\label{fig:act08-basica}
+\end{figure}
 
 \subsection{Heuristica propuesta}
 
@@ -41,23 +36,14 @@ pendientes lejanas entre si, Pac-Man tiene que recorrer al menos la distancia re
 algun momento del camino --no solo la distancia desde su posicion actual hasta la mas lejana de
 las dos--.
 
-\begin{verbatim}
-def cornersHeuristic(state, problem):
-    position, visited = state
-    corners = problem.corners
-    pendientes = [c for c, v in zip(corners, visited) if not v]
-    if not pendientes:
-        return 0
-    puntos = [position] + pendientes
-    maxDist = 0
-    for i in range(len(puntos)):
-        for j in range(i + 1, len(puntos)):
-            p1, p2 = puntos[i], puntos[j]
-            d = abs(p1[0]-p2[0]) + abs(p1[1]-p2[1])
-            if d > maxDist:
-                maxDist = d
-    return maxDist
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{capturas/actividad08_heuristica_propuesta.png}
+\caption{\texttt{cornersHeuristic} (heurística propuesta, la que usa \texttt{AStarCornersAgent})
+en \texttt{pacman/searchAgents.py} (líneas 399-452). Comparar con la Figura~\ref{fig:act08-basica}:
+aquí se recorren todos los pares de \{posición\}~$\cup$~pendientes, no solo posición$\to$esquina.}
+\label{fig:act08-propuesta}
+\end{figure}
 
 A diferencia de \texttt{foodHeuristic}, aqui no se uso \texttt{problem.heuristicInfo} como cache:
 como mucho hay 4 esquinas (nunca mas de 6 pares), asi que el costo de recalcular todas las
@@ -86,7 +72,10 @@ Ambas cotas se verificaron tambien de forma empirica en el estado inicial de \te
 $h_{propuesta}(inicio) = 12$, ambos por debajo del costo optimo real conocido (22, obtenido con
 UCS en la Actividad 7).
 
-\subsection{Consistencia (no exigida, se incluye por completitud)}
+\subsection{Consistencia}
+
+Una heuristica consistente debe cumplir $h(n) \le c(n,n') + h(n')$ para cualquier estado $n$ y
+cualquiera de sus sucesores $n'$, ademas de $h(\text{meta}) = 0$.
 
 Para cualquier sucesor $n'$ de $n$ (un paso ortogonal, costo 1), si el par de puntos que define
 $h(n)$ sigue intacto en $n'$ (ninguno de los dos era la esquina que se acaba de visitar al pasar
@@ -97,6 +86,25 @@ una esquina que se acaba de visitar, el argumento se reduce al caso trivial
 $d_M(n, n') = 1 \le 1 + h(n')$, valido porque $h(n') \ge 0$ siempre. En consecuencia,
 $h(n) \le c(n, n') + h(n')$ se cumple en todos los casos, y $h(\text{meta}) = 0$ (no quedan
 esquinas pendientes). Ambas heuristicas son, entonces, tambien consistentes.
+
+\subsection{Pregunta de análisis (consistencia)}
+
+\textbf{Analice si la heurística propuesta para el problema de las esquinas puede considerarse
+consistente. Justifique su respuesta.}
+
+Sí, la heurística propuesta (y también la básica) es consistente. Como se muestra en la
+subsección anterior, para cualquier sucesor $n'$ de $n$ el valor de $h$ solo puede cambiar en, como
+máximo, 1 unidad respecto a $h(n')$: el punto (esquina o posición) que definía el máximo en $n$ o
+bien sigue presente en $n'$ --y entonces la desigualdad triangular de Manhattan acota
+$d_M(n,p) \le 1 + d_M(n',p) \le 1 + h(n')$--, o bien era la esquina que Pac-Man acaba de visitar al
+pasar de $n$ a $n'$ --y entonces el caso se reduce a $d_M(n,n')=1 \le 1 + h(n')$, válido porque
+$h(n') \ge 0$ siempre--. En ambos casos $h(n) \le c(n,n') + h(n') = 1 + h(n')$, que es exactamente
+la definición de consistencia, y $h(\text{meta}) = 0$ porque al no quedar esquinas pendientes el
+diámetro del conjunto (un único punto, la posición final) es cero. Vale la pena notar que en A*
+con búsqueda en grafo (como la implementada en las Actividades 2-3) la consistencia es, de hecho,
+la propiedad más fuerte que realmente se necesita: consistencia implica admisibilidad, y además
+garantiza que el costo $g(n)$ con el que un estado se expande por primera vez ya es su costo
+óptimo, sin necesidad de reabrir nodos ya expandidos.
 
 \subsection{Procedimiento y resultados}
 

@@ -34,7 +34,11 @@ else
     exit 1
 fi
 
-(cd entregable && zip -r "$(basename "$ZIP")" "$(basename "$STAGE")" -x '*.DS_Store')
+
+# Los 4 archivos van SUELTOS en la raiz del zip (no dentro de una subcarpeta):
+# el enunciado los lista como GrupoXX_Pacman_AStar.zip/search.py, no
+# GrupoXX_Pacman_AStar.zip/GrupoXX_Pacman_AStar/search.py.
+(cd "$STAGE" && zip -r "../$(basename "$ZIP")" . -x '*.DS_Store')
 rm -rf "$STAGE"
 
 echo "Listo: $ZIP"

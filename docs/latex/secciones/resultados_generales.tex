@@ -1,0 +1,37 @@
+La siguiente tabla consolida los principales resultados experimentales de todas las actividades.
+Cada método se evaluó sobre el layout de referencia adoptado para ese tipo de problema a lo largo
+del laboratorio (ver la nota al pie de la tabla): \texttt{mediumClassic} para los métodos de
+posición simple (Actividades 2, 4, 5 y 6), \texttt{tinyCorners} para el problema de las esquinas
+(Actividades 7-9) y \texttt{testClassic} para el problema de recolección de alimentos (Actividades
+10-11).
+
+\begin{table}[H]
+\centering
+\small
+\caption{Resultados generales consolidados}
+\label{tab:resultados-generales}
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Experimento} & \textbf{Costo} & \textbf{Expandidos} & \textbf{Tiempo (s)} \\
+\midrule
+UCS                          & 12 & 69  & 0.000251 \\
+A* + heurística nula         & 12 & 69  & 0.000262 \\
+A* + Manhattan                & 12 & 15  & 0.000066 \\
+A* + Euclidiana                & 12 & 16  & 0.000070 \\
+A* + Corners Heuristic         & 22 & 119 & 0.001297 \\
+A* + Food Heuristic            & 16 & 383 & 0.014872 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textit{Nota: las filas de UCS, heurística nula, Manhattan y Euclidiana corresponden a
+\texttt{mediumClassic}; la fila de Corners Heuristic corresponde a \texttt{tinyCorners} (heurística
+propuesta de la Actividad 8, la que usa \texttt{AStarCornersAgent}); la fila de Food Heuristic
+corresponde a \texttt{testClassic} (Heurística 2 de la Actividad 11, la que usa
+\texttt{AStarFoodSearchAgent}). Los costos no son comparables entre filas de distinto layout --cada
+uno tiene su propio costo óptimo--.}
+
+\textit{Lo que sí es comparable dentro de cada bloque es la reducción de nodos expandidos frente a
+su propia línea base de UCS o heurística nula en el mismo layout (ver las secciones de cada
+actividad para el detalle completo, incluidas las heurísticas intermedias que se omiten aquí por
+brevedad --básica en esquinas, Heurística 1 en comida--).}

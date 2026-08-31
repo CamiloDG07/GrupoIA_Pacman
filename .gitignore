@@ -20,6 +20,10 @@ docs/latex/secciones/*.aux
 # Empaquetado final (se genera, no se versiona)
 entregable/*.zip
 
+# Material de estudio interno del grupo (no lo pidio el profesor, no se sube a GitHub)
+docs/sustentacion/
+docs/guia_codigos_clave.md
+
 # Editores
 .vscode/
 .idea/

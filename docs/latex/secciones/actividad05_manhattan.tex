@@ -3,12 +3,12 @@
 \texttt{manhattanHeuristic} ya viene provista en \texttt{searchAgents.py} (no fue necesario
 implementarla para esta actividad):
 
-\begin{verbatim}
-def manhattanHeuristic(position, problem, info={}):
-    xy1 = position
-    xy2 = problem.goal
-    return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{capturas/actividad05_manhattan.png}
+\caption{\texttt{manhattanHeuristic} en \texttt{pacman/searchAgents.py} (líneas 236-240).}
+\label{fig:act05-manhattan}
+\end{figure}
 
 Calcula $h_M(n) = |x_n - x_g| + |y_n - y_g|$: la suma de las diferencias absolutas en cada eje,
 que es exactamente el número mínimo de movimientos ortogonales (norte/sur/este/oeste) necesarios

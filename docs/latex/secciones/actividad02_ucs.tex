@@ -7,28 +7,13 @@ por estado para evitar volver a expandir un nodo cuando ya se encontró un camin
 él (\texttt{util.PriorityQueue} no soporta \emph{decrease-key}, así que las entradas obsoletas se
 descartan al extraerlas de la cola en lugar de actualizarse en el lugar).
 
-\begin{verbatim}
-def uniformCostSearch(problem):
-    frontier = util.PriorityQueue()
-    startState = problem.getStartState()
-    frontier.push((startState, [], 0), 0)
-    bestCost = {startState: 0}
-
-    while not frontier.isEmpty():
-        state, actions, cost = frontier.pop()
-        if cost > bestCost.get(state, float('inf')):
-            continue
-        if problem.isGoalState(state):
-            return actions
-        for successor, action, stepCost in problem.getSuccessors(state):
-            newCost = cost + stepCost
-            if newCost < bestCost.get(successor, float('inf')):
-                bestCost[successor] = newCost
-                frontier.push(
-                    (successor, actions + [action], newCost),
-                    newCost)
-    return []
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{capturas/actividad02_ucs.png}
+\caption{Implementación de \texttt{uniformCostSearch} en \texttt{pacman/search.py} (líneas
+111-142), incluido el contador de desempate \texttt{contador} explicado más abajo.}
+\label{fig:act02-ucs}
+\end{figure}
 
 \subsection{Procedimiento y resultados}
 

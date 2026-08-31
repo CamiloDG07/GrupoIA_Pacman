@@ -9,10 +9,13 @@ El estado ya no es solo la posición de Pac-Man: es el par $s = (p, F)$, donde $
 $(x,y)$ y $F$ es una \texttt{Grid} (matriz booleana) con el estado --presente o consumido-- de cada
 alimento del laberinto:
 
-\begin{verbatim}
-def isGoalState(self, state):
-    return state[1].count() == 0
-\end{verbatim}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{capturas/actividad10_food_isgoal.png}
+\caption{Estado y \texttt{isGoalState} de \texttt{FoodSearchProblem} en
+\texttt{pacman/searchAgents.py} (líneas 460-480).}
+\label{fig:act10-food}
+\end{figure}
 
 La meta se alcanza cuando ya no queda ningún alimento por consumir (\texttt{foodGrid.count() == 0}),
 sin importar en qué posición esté Pac-Man.

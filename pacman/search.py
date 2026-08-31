@@ -1,49 +1,6 @@
-﻿"""
-In search.py, you will implement generic search algorithms which are called
+"""
+In search.py, you will implement generic search algorithms which are called 
 by Pacman agents (in searchAgents.py).
-
-=====================================================================
-REVISION (Wiston, Parte 3 del grupo) sobre la version que mando el
-companero encargado de la Parte 1 (Actividades 1-6):
-=====================================================================
-
-Se encontraron y corrigieron DOS problemas reales, verificados
-ejecutando el archivo tal cual llego (no solo leyendolo):
-
-1. uniformCostSearch (Actividad 2) NO estaba implementada: solo tenia
-   "util.raiseNotDefined()", que en este proyecto especifico hace
-   "sys.exit(1)" -- es decir, TERMINA TODO EL PROCESO DE PYTHON apenas
-   se llama, no lanza una excepcion que se pueda capturar. Confirmado
-   corriendola: el proceso termina con exit code 1 imprimiendo
-   "Method not implemented: uniformCostSearch". Se implemento aqui,
-   seleccionando exactamente el mismo patron de aStarSearch que ya
-   traia el archivo (diccionario "explored" con re-apertura de nodos),
-   para que el archivo completo quede en un unico estilo consistente.
-
-2. aStarSearch SI estaba implementada y el algoritmo en si es correcto
-   (frontera de prioridad + prueba de meta al extraer + diccionario
-   "explored" que permite reabrir un estado si se encuentra un costo
-   mejor), pero le faltaba un contador de desempate en la tupla de la
-   frontera. Sin el, en cuanto dos entradas empatan en prioridad,
-   util.PriorityQueue (que usa heapq SIN ningun tiebreaker propio,
-   ver util.py) compara el resto de la tupla -- (estado, acciones,
-   costo) --, y esa comparacion revienta con
-       TypeError: '<' not supported between instances of 'Grid' and 'Grid'
-   apenas el estado incluye un Grid no comparable, como el foodGrid de
-   FoodSearchProblem (las Actividades 10 y 11, que son justo la Parte
-   3). Confirmado: sin el fix, aStarSearch(problem, nullHeuristic)
-   sobre el layout testClassic con FoodSearchProblem revienta con ese
-   error exacto (funcionaba en PositionSearchProblem porque ahi el
-   estado es (x,y), siempre comparable, por eso el bug no se notaba
-   antes). Con el fix (un contador entero unico como primer elemento
-   de cada tupla), aStarSearch corre bien sobre FoodSearchProblem:
-   testClassic da costo=16, expandidos=2598, exactamente igual que con
-   la implementacion propia de la Parte 3.
-
-Todo lo demas del archivo (SearchProblem, tinyMazeSearch,
-depthFirstSearch/breadthFirstSearch sin implementar -- no las pide
-ninguna de las 11 actividades de la guia --, nullHeuristic) se dejo
-tal cual, sin tocar.
 """
 
 import util
@@ -52,20 +9,20 @@ class SearchProblem:
   """
   This class outlines the structure of a search problem, but doesn't implement
   any of the methods (in object-oriented terminology: an abstract class).
-
+  
   You do not need to change anything in this class, ever.
   """
-
+  
   def getStartState(self):
      """
-     Returns the start state for the search problem
+     Returns the start state for the search problem 
      """
      util.raiseNotDefined()
-
+    
   def isGoalState(self, state):
      """
        state: Search state
-
+    
      Returns True if and only if the state is a valid goal state
      """
      util.raiseNotDefined()
@@ -73,11 +30,11 @@ class SearchProblem:
   def getSuccessors(self, state):
      """
        state: Search state
-
-     For a given state, this should return a list of triples,
-     (successor, action, stepCost), where 'successor' is a
+     
+     For a given state, this should return a list of triples, 
+     (successor, action, stepCost), where 'successor' is a 
      successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental
+     required to get there, and 'stepCost' is the incremental 
      cost of expanding to that successor
      """
      util.raiseNotDefined()
@@ -85,12 +42,12 @@ class SearchProblem:
   def getCostOfActions(self, actions):
      """
       actions: A list of actions to take
-
+ 
      This method returns the total cost of a particular sequence of actions.  The sequence must
      be composed of legal moves
      """
      util.raiseNotDefined()
-
+           
 
 def tinyMazeSearch(problem):
   """
@@ -105,40 +62,84 @@ def tinyMazeSearch(problem):
 def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first [p 85].
-
+  
   Your search algorithm needs to return a list of actions that reaches
   the goal.  Make sure to implement a graph search algorithm [Fig. 3.7].
-
+  
   To get started, you might want to try some of these simple commands to
   understand the search problem that is being passed in:
-
+  
   print "Start:", problem.getStartState()
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
   """
-  util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
-  util.raiseNotDefined()
-
+      
 def uniformCostSearch(problem):
-    from util import PriorityQueue
-    fringe = PriorityQueue()
-    fringe.push((problem.getStartState(), []), 0)
-    visited = set()
-    while not fringe.isEmpty():
-        state, actions = fringe.pop()
-        if problem.isGoalState(state):
-            return actions
-        if state not in visited:
-            visited.add(state)
-            for successor, action, stepCost in problem.getSuccessors(state):
-                if successor not in visited:
-                    next_actions = actions + [action]
-                    cost = problem.getCostOfActions(next_actions)
-                    fringe.push((successor, next_actions), cost)
-    return []
+  """
+  Search the node of least total cost first.
+
+  Actividad 2 del taller "Busqueda Informada con Pac-Man".
+
+  UCS es una busqueda en grafo: la frontera es una cola de prioridad
+  (util.PriorityQueue) ordenada por g(n), el costo acumulado real desde el
+  estado inicial hasta n (no se usa ninguna heuristica, h(n) = 0 siempre).
+  En cada paso se extrae el estado con menor g(n) conocido; si ya es meta,
+  se retorna el plan que llego hasta el. Si no, se expande (esto es lo que
+  incrementa problem._expanded, la metrica de "nodos expandidos").
+
+  Se lleva un diccionario bestCost con el mejor costo conocido para cada
+  estado visitado. Como util.PriorityQueue no permite bajar la prioridad de
+  un elemento ya insertado (no tiene decrease-key), cuando se encuentra un
+  camino mas barato hacia un estado simplemente se vuelve a insertar ese
+  estado con su nuevo costo; las copias "viejas" que puedan quedar en la
+  cola se descartan al extraerlas (ver el chequeo de abajo), en vez de
+  expandirlas de nuevo.
+
+  Contador de desempate (tieBreaker): util.PriorityQueue usa heapq, que
+  guarda tuplas (prioridad, item). Si dos entradas tienen la MISMA
+  prioridad, heapq compara "item" para decidir el orden, y en problemas
+  donde el estado no es simplemente (x, y) sino que incluye estructuras no
+  comparables --como el Grid de comida en FoodSearchProblem, Actividad
+  10-11-- esa comparacion revienta con un TypeError. Por eso cada elemento
+  de la frontera lleva un contador entero unico y creciente en la primera
+  posicion de la tupla: como los contadores nunca se repiten, heapq nunca
+  necesita mirar mas alla de ellos para resolver un empate.
+  """
+  frontier = util.PriorityQueue()
+
+  startState = problem.getStartState()
+  contador = 0
+  # Cada elemento de la frontera es (contador, estado, acciones, g(n)).
+  frontier.push((contador, startState, [], 0), 0)
+
+  # Mejor costo g(n) conocido hasta ahora para cada estado.
+  bestCost = {startState: 0}
+
+  while not frontier.isEmpty():
+    _, state, actions, cost = frontier.pop()
+
+    # Si ya existe un camino mas barato registrado para este estado,
+    # esta es una entrada obsoleta de la cola: se descarta sin expandir.
+    if cost > bestCost.get(state, float('inf')):
+      continue
+
+    # Prueba de objetivo ANTES de expandir (evita expandir de mas).
+    if problem.isGoalState(state):
+      return actions
+
+    for successor, action, stepCost in problem.getSuccessors(state):
+      newCost = cost + stepCost
+      # Solo nos interesa este sucesor si mejora el mejor costo conocido.
+      if newCost < bestCost.get(successor, float('inf')):
+        bestCost[successor] = newCost
+        contador += 1
+        frontier.push((contador, successor, actions + [action], newCost), newCost)
+
+  # Frontera vacia sin encontrar meta: no existe solucion.
+  return []
 
 def nullHeuristic(state, problem=None):
   """
@@ -151,45 +152,62 @@ def aStarSearch(problem, heuristic=nullHeuristic):
   """
   Search the node that has the lowest combined cost and heuristic first.
 
-  [Corregido -- ver nota al inicio del archivo] Se agrego un contador de
-  desempate (tieBreaker) como primer elemento de cada tupla de la
-  frontera. El resto del algoritmo (frontera de prioridad con f(n) =
-  g(n) + h(n), prueba de meta al extraer el nodo, diccionario
-  "explored" con re-apertura de nodos si se encuentra un costo mejor)
-  se dejo exactamente igual: es un patron distinto al de "podar antes
-  de insertar" (bestCost) que usa la implementacion propia de la Parte
-  3, pero igual de correcto para heuristicas admisibles y consistentes
-  como las de este proyecto (Manhattan, Euclidiana, foodHeuristic).
+  Actividad 3 del taller "Busqueda Informada con Pac-Man".
+
+  Es el mismo esqueleto de busqueda en grafo que uniformCostSearch (misma
+  frontera con util.PriorityQueue, mismo diccionario bestCost para no
+  reexpandir un estado cuando ya se conoce un camino mas barato hacia el, y
+  el mismo goal-test al extraer el nodo de la frontera). La UNICA diferencia
+  es la prioridad usada para ordenar la frontera:
+
+      UCS:  prioridad = g(n)
+      A*:   prioridad = g(n) + h(n) = f(n)
+
+  Con heuristic = nullHeuristic (h(n) = 0 siempre), f(n) = g(n) y A* se
+  comporta exactamente igual que UCS (Actividad 4). Con una heuristica
+  admisible y consistente (Manhattan, Euclidiana, etc.) A* sigue siendo
+  optimo, pero prioriza explorar los estados que ademas de tener bajo costo
+  acumulado, parecen estar mas cerca del objetivo.
+
+  Igual que en uniformCostSearch, se agrega un contador de desempate
+  (tieBreaker) en la tupla de la frontera: sin el, heapq revienta con
+  TypeError apenas dos entradas empatan en prioridad y el estado incluye
+  algo no comparable (el Grid de comida en FoodSearchProblem, Actividad
+  10-11).
   """
-  from util import PriorityQueue
+  frontier = util.PriorityQueue()
 
-  frontier = PriorityQueue()
-  explored = {}
-
-  start_state = problem.getStartState()
+  startState = problem.getStartState()
   contador = 0
-  start_g = 0
-  start_h = heuristic(start_state, problem)
-  start_f = start_g + start_h
+  startPriority = 0 + heuristic(startState, problem)  # f = g + h, g = 0
+  frontier.push((contador, startState, [], 0), startPriority)
 
-  frontier.push((contador, start_state, [], start_g), start_f)
+  # Mejor costo g(n) conocido hasta ahora para cada estado (igual que UCS;
+  # la heuristica NO se guarda aqui porque no hace falta: se recalcula al
+  # generar cada sucesor).
+  bestCost = {startState: 0}
 
   while not frontier.isEmpty():
-      _, current_state, actions, current_g = frontier.pop()
+    _, state, actions, cost = frontier.pop()
 
-      if problem.isGoalState(current_state):
-          return actions
+    # Entrada obsoleta de la cola (ya se encontro un g(n) mejor): se
+    # descarta sin expandir, igual que en UCS.
+    if cost > bestCost.get(state, float('inf')):
+      continue
 
-      if current_state not in explored or current_g < explored[current_state]:
-          explored[current_state] = current_g
+    # Prueba de objetivo ANTES de expandir.
+    if problem.isGoalState(state):
+      return actions
 
-          for successor, action, stepCost in problem.getSuccessors(current_state):
-              new_g = current_g + stepCost
-              new_actions = actions + [action]
-              new_f = new_g + heuristic(successor, problem)
-              contador += 1
-              frontier.push((contador, successor, new_actions, new_g), new_f)
+    for successor, action, stepCost in problem.getSuccessors(state):
+      newCost = cost + stepCost
+      if newCost < bestCost.get(successor, float('inf')):
+        bestCost[successor] = newCost
+        contador += 1
+        priority = newCost + heuristic(successor, problem)  # f(n) = g(n) + h(n)
+        frontier.push((contador, successor, actions + [action], newCost), priority)
 
+  # Frontera vacia sin encontrar meta: no existe solucion.
   return []
 
 # Abbreviations
@@ -197,4 +215,3 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
-
