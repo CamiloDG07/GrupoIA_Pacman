@@ -25,6 +25,40 @@ componentes sobre el layout \texttt{tinyMaze.lay}:
 [C]  Costo: 1 por movimiento
 \end{verbatim}
 
+\subsection{De donde sale el estado inicial (1,7)}
+
+El estado inicial $(1,7)$ no se calculo a mano: sale directamente del archivo de layout
+\texttt{pacman/layouts/tinyMaze.lay}, que dibuja el laberinto con caracteres de texto:
+
+\begin{verbatim}
+%%%%%%%%%%%
+%P%.....%.%
+%.%.%%%.%.%
+%.%......%%
+%.%..%....%
+%...%.%%% %
+%%%....%% %
+%.        %
+%%%%%%%%%%%
+\end{verbatim}
+
+La letra \texttt{P} marca la posicion de Pac-Man. La conversion de esa posicion en el texto a
+coordenadas $(x,y)$ sigue dos reglas:
+
+\begin{itemize}
+\item \textbf{$x$} es la columna, contada normalmente desde la izquierda empezando en 0. La
+  \texttt{P} esta en la columna 1 (segunda columna) $\Rightarrow x=1$.
+\item \textbf{$y$} es la fila, pero contada \emph{desde abajo hacia arriba}, empezando en 0 en la
+  ultima fila del archivo (el origen $(0,0)$ es la esquina inferior izquierda, no la superior). El
+  layout tiene 9 filas (indices 0 a 8 contando desde arriba); la \texttt{P} esta en la fila de
+  indice 1 desde arriba, que equivale a $8-1=7$ desde abajo $\Rightarrow y=7$.
+\end{itemize}
+
+Por eso el estado inicial es $(1,7)$. Esta conversion la hace internamente \texttt{layout.py} (codigo
+del profesor, sin modificar) al cargar el archivo \texttt{.lay}; \texttt{getStartState()} de
+\texttt{PositionSearchProblem} solo devuelve el resultado ya calculado. El mismo procedimiento
+aplica para leer el estado inicial de cualquier otro layout usado en el resto del informe.
+
 \subsection{Componentes del problema de busqueda}
 
 \begin{table}[H]
