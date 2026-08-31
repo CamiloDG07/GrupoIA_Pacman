@@ -88,7 +88,7 @@ def generar(nombre_archivo, archivo, lineas_rango, funcion, codigo_lineas, nota=
 SLOTS = [
     dict(
         nombre_archivo="actividad02_ucs.png",
-        archivo="pacman/search.py", lineas_rango="111-142", funcion="uniformCostSearch",
+        archivo="pacman/search.py", lineas_rango="80-120", funcion="uniformCostSearch",
         codigo_lineas=[
             "def uniformCostSearch(problem):",
             "  frontier = util.PriorityQueue()",
@@ -114,7 +114,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad03_astar.png",
-        archivo="pacman/search.py", lineas_rango="178-211", funcion="aStarSearch",
+        archivo="pacman/search.py", lineas_rango="129-172", funcion="aStarSearch",
         codigo_lineas=[
             "def aStarSearch(problem, heuristic=nullHeuristic):",
             "  frontier = util.PriorityQueue()",
@@ -162,7 +162,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad07_corners.png",
-        archivo="pacman/searchAgents.py", lineas_rango="273-351",
+        archivo="pacman/searchAgents.py", lineas_rango="273-336",
         funcion="getStartState / isGoalState / getSuccessors (CornersProblem)",
         codigo_lineas=[
             "def getStartState(self):",
@@ -188,7 +188,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad08_heuristica_basica.png",
-        archivo="pacman/searchAgents.py", lineas_rango="367-396", funcion="cornersHeuristicBasica",
+        archivo="pacman/searchAgents.py", lineas_rango="351-364", funcion="cornersHeuristicBasica",
         codigo_lineas=[
             "def cornersHeuristicBasica(state, problem):",
             "  position, visited = state",
@@ -202,7 +202,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad08_heuristica_propuesta.png",
-        archivo="pacman/searchAgents.py", lineas_rango="399-452", funcion="cornersHeuristic",
+        archivo="pacman/searchAgents.py", lineas_rango="365-389", funcion="cornersHeuristic",
         codigo_lineas=[
             "def cornersHeuristic(state, problem):",
             "  position, visited = state",
@@ -223,7 +223,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad10_food_isgoal.png",
-        archivo="pacman/searchAgents.py", lineas_rango="460-480",
+        archivo="pacman/searchAgents.py", lineas_rango="396-417",
         funcion="FoodSearchProblem.__init__ / isGoalState",
         codigo_lineas=[
             "class FoodSearchProblem:",
@@ -238,7 +238,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad11_heuristica1.png",
-        archivo="pacman/searchAgents.py", lineas_rango="516-540", funcion="foodHeuristicV1",
+        archivo="pacman/searchAgents.py", lineas_rango="452-464", funcion="foodHeuristicV1",
         codigo_lineas=[
             "def foodHeuristicV1(state, problem):",
             "  position, foodGrid = state",
@@ -251,7 +251,7 @@ SLOTS = [
     ),
     dict(
         nombre_archivo="actividad11_heuristica2.png",
-        archivo="pacman/searchAgents.py", lineas_rango="543-608", funcion="foodHeuristic (con cache)",
+        archivo="pacman/searchAgents.py", lineas_rango="465-504", funcion="foodHeuristic (con cache)",
         codigo_lineas=[
             "def foodHeuristic(state, problem):",
             "  position, foodGrid = state",

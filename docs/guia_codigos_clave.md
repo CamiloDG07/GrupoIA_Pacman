@@ -77,7 +77,7 @@ a problemas donde el estado necesita más información.
 
 ## Actividad 2. Búsqueda de costo uniforme (UCS)
 
-**📸 Qué capturar:** `pacman/search.py`, líneas 111-142, función
+**📸 Qué capturar:** `pacman/search.py`, líneas 80-120, función
 `uniformCostSearch`.
 
 ```python
@@ -143,7 +143,7 @@ falla (no da ningún número) apenas se corre sobre `FoodSearchProblem`.
 
 ## Actividad 3. Implementación de A*
 
-**📸 Qué capturar:** `pacman/search.py`, líneas 178-211, función
+**📸 Qué capturar:** `pacman/search.py`, líneas 129-172, función
 `aStarSearch`.
 
 ```python
@@ -291,7 +291,7 @@ mejor la búsqueda sin dejar de ser admisible.
 
 ## Actividad 7. Problema de las cuatro esquinas — diseño del estado
 
-**📸 Qué capturar:** `pacman/searchAgents.py`, líneas 273-351:
+**📸 Qué capturar:** `pacman/searchAgents.py`, líneas 273-336:
 `getStartState`, `isGoalState`, `getSuccessors` de `CornersProblem`.
 
 ```python
@@ -354,8 +354,8 @@ es la línea base contra la que se miden las heurísticas de las Actividades
 ## Actividad 8. Heurísticas para CornersProblem
 
 **📸 Qué capturar (2 pantallazos):**
-- `pacman/searchAgents.py`, líneas 367-396, `cornersHeuristicBasica`.
-- `pacman/searchAgents.py`, líneas 399-452, `cornersHeuristic` (la
+- `pacman/searchAgents.py`, líneas 351-364, `cornersHeuristicBasica`.
+- `pacman/searchAgents.py`, líneas 365-389, `cornersHeuristic` (la
   propuesta, usada por `AStarCornersAgent`).
 
 ```python
@@ -450,7 +450,7 @@ estados que A*+propuesta para llegar exactamente al mismo resultado óptimo.
 
 ## Actividad 10. Búsqueda de todos los alimentos (FoodSearchProblem)
 
-**📸 Qué capturar:** `pacman/searchAgents.py`, líneas 460-480 (estado e
+**📸 Qué capturar:** `pacman/searchAgents.py`, líneas 396-417 (estado e
 `isGoalState`; el archivo ya viene completo, no se modificó código aquí).
 
 ```python
@@ -489,8 +489,8 @@ hace falta diseñar una heurística no trivial en la Actividad 11.
 ## Actividad 11. Heurísticas para FoodSearchProblem
 
 **📸 Qué capturar (2 pantallazos):**
-- `pacman/searchAgents.py`, líneas 516-540, `foodHeuristicV1`.
-- `pacman/searchAgents.py`, líneas 543-608, `foodHeuristic` (con caché;
+- `pacman/searchAgents.py`, líneas 452-464, `foodHeuristicV1`.
+- `pacman/searchAgents.py`, líneas 465-504, `foodHeuristic` (con caché;
   la que usa `AStarFoodSearchAgent`).
 
 ```python

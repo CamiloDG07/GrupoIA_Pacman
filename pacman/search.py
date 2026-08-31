@@ -81,32 +81,10 @@ def uniformCostSearch(problem):
   """
   Search the node of least total cost first.
 
-  Actividad 2 del taller "Busqueda Informada con Pac-Man".
-
-  UCS es una busqueda en grafo: la frontera es una cola de prioridad
-  (util.PriorityQueue) ordenada por g(n), el costo acumulado real desde el
-  estado inicial hasta n (no se usa ninguna heuristica, h(n) = 0 siempre).
-  En cada paso se extrae el estado con menor g(n) conocido; si ya es meta,
-  se retorna el plan que llego hasta el. Si no, se expande (esto es lo que
-  incrementa problem._expanded, la metrica de "nodos expandidos").
-
-  Se lleva un diccionario bestCost con el mejor costo conocido para cada
-  estado visitado. Como util.PriorityQueue no permite bajar la prioridad de
-  un elemento ya insertado (no tiene decrease-key), cuando se encuentra un
-  camino mas barato hacia un estado simplemente se vuelve a insertar ese
-  estado con su nuevo costo; las copias "viejas" que puedan quedar en la
-  cola se descartan al extraerlas (ver el chequeo de abajo), en vez de
-  expandirlas de nuevo.
-
-  Contador de desempate (tieBreaker): util.PriorityQueue usa heapq, que
-  guarda tuplas (prioridad, item). Si dos entradas tienen la MISMA
-  prioridad, heapq compara "item" para decidir el orden, y en problemas
-  donde el estado no es simplemente (x, y) sino que incluye estructuras no
-  comparables --como el Grid de comida en FoodSearchProblem, Actividad
-  10-11-- esa comparacion revienta con un TypeError. Por eso cada elemento
-  de la frontera lleva un contador entero unico y creciente en la primera
-  posicion de la tupla: como los contadores nunca se repiten, heapq nunca
-  necesita mirar mas alla de ellos para resolver un empate.
+  Actividad 2. Busqueda en grafo: frontera ordenada por g(n) (costo
+  acumulado), con un diccionario bestCost para no reexpandir un estado si
+  ya se conoce un camino mas barato. El contador en cada tupla evita que
+  heapq falle al comparar estados no comparables (ver Actividad 11).
   """
   frontier = util.PriorityQueue()
 
@@ -152,28 +130,11 @@ def aStarSearch(problem, heuristic=nullHeuristic):
   """
   Search the node that has the lowest combined cost and heuristic first.
 
-  Actividad 3 del taller "Busqueda Informada con Pac-Man".
-
-  Es el mismo esqueleto de busqueda en grafo que uniformCostSearch (misma
-  frontera con util.PriorityQueue, mismo diccionario bestCost para no
-  reexpandir un estado cuando ya se conoce un camino mas barato hacia el, y
-  el mismo goal-test al extraer el nodo de la frontera). La UNICA diferencia
-  es la prioridad usada para ordenar la frontera:
-
-      UCS:  prioridad = g(n)
-      A*:   prioridad = g(n) + h(n) = f(n)
-
-  Con heuristic = nullHeuristic (h(n) = 0 siempre), f(n) = g(n) y A* se
-  comporta exactamente igual que UCS (Actividad 4). Con una heuristica
-  admisible y consistente (Manhattan, Euclidiana, etc.) A* sigue siendo
-  optimo, pero prioriza explorar los estados que ademas de tener bajo costo
-  acumulado, parecen estar mas cerca del objetivo.
-
-  Igual que en uniformCostSearch, se agrega un contador de desempate
-  (tieBreaker) en la tupla de la frontera: sin el, heapq revienta con
-  TypeError apenas dos entradas empatan en prioridad y el estado incluye
-  algo no comparable (el Grid de comida en FoodSearchProblem, Actividad
-  10-11).
+  Actividad 3. Mismo esqueleto que uniformCostSearch, con una sola
+  diferencia: la prioridad de la frontera es f(n) = g(n) + h(n) en vez de
+  solo g(n). Con heuristic=nullHeuristic se comporta igual que UCS
+  (Actividad 4); con una heuristica admisible y consistente sigue siendo
+  optimo, pero expande menos nodos.
   """
   frontier = util.PriorityQueue()
 

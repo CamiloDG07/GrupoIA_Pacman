@@ -26,16 +26,16 @@ recompilar cada vez para ver el avance.
 
 | Archivo de imagen | Screenshot de... | Archivo real | Líneas |
 |---|---|---|---|
-| `actividad02_ucs.png` | `uniformCostSearch` | `pacman/search.py` | 111-142 |
-| `actividad03_astar.png` | `aStarSearch` | `pacman/search.py` | 178-211 |
+| `actividad02_ucs.png` | `uniformCostSearch` | `pacman/search.py` | 80-120 |
+| `actividad03_astar.png` | `aStarSearch` | `pacman/search.py` | 129-172 |
 | `actividad05_manhattan.png` | `manhattanHeuristic` | `pacman/searchAgents.py` | 236-240 |
 | `actividad06_euclidiana.png` | `euclideanHeuristic` | `pacman/searchAgents.py` | 242-246 |
-| `actividad07_corners.png` | `getStartState`/`isGoalState`/`getSuccessors` de `CornersProblem` | `pacman/searchAgents.py` | 273-351 |
-| `actividad08_heuristica_basica.png` | `cornersHeuristicBasica` | `pacman/searchAgents.py` | 367-396 |
-| `actividad08_heuristica_propuesta.png` | `cornersHeuristic` | `pacman/searchAgents.py` | 399-452 |
-| `actividad10_food_isgoal.png` | `FoodSearchProblem.__init__`/`isGoalState` | `pacman/searchAgents.py` | 460-480 |
-| `actividad11_heuristica1.png` | `foodHeuristicV1` | `pacman/searchAgents.py` | 516-540 |
-| `actividad11_heuristica2.png` | `foodHeuristic` (con caché) | `pacman/searchAgents.py` | 543-608 |
+| `actividad07_corners.png` | `getStartState`/`isGoalState`/`getSuccessors` de `CornersProblem` | `pacman/searchAgents.py` | 273-336 |
+| `actividad08_heuristica_basica.png` | `cornersHeuristicBasica` | `pacman/searchAgents.py` | 351-364 |
+| `actividad08_heuristica_propuesta.png` | `cornersHeuristic` | `pacman/searchAgents.py` | 365-389 |
+| `actividad10_food_isgoal.png` | `FoodSearchProblem.__init__`/`isGoalState` | `pacman/searchAgents.py` | 396-417 |
+| `actividad11_heuristica1.png` | `foodHeuristicV1` | `pacman/searchAgents.py` | 452-464 |
+| `actividad11_heuristica2.png` | `foodHeuristic` (con caché) | `pacman/searchAgents.py` | 465-504 |
 
 Para el detalle de **qué explicar de cada pantallazo** (qué hace, por qué se
 hizo así, y cómo afecta a los resultados), ver `docs/guia_codigos_clave.md`

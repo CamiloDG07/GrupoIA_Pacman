@@ -274,21 +274,10 @@ class CornersProblem(search.SearchProblem):
     """
     Returns the start state (in your state space, not the full Pacman state space)
 
-    Actividad 7 del taller "Busqueda Informada con Pac-Man".
-
-    El estado NO puede ser solo la posicion (x,y): como explica la guia, dos
-    situaciones con la misma posicion pero distinto numero de esquinas ya
-    visitadas no son equivalentes para este problema. Por eso el estado es
-    el par:
-
-        s = (posicion, esquinas_visitadas)
-
-    donde "esquinas_visitadas" es una tupla de 4 booleanos, uno por cada
-    esquina de self.corners, en el MISMO orden ((1,1), (1,top), (right,1),
-    (right,top)). Se usa una tupla (no una lista) porque tiene que ser
-    hasheable/comparable para funcionar como estado dentro de
-    util.PriorityQueue y de cualquier diccionario de "mejor costo conocido"
-    que use el algoritmo de busqueda.
+    Actividad 7. El estado es (posicion, esquinas_visitadas): una posicion
+    (x,y) mas una tupla de 4 booleanos (una por esquina, mismo orden que
+    self.corners). No basta con (x,y) solo, porque dos visitas al mismo
+    punto con distintas esquinas ya marcadas no son equivalentes aqui.
     """
     esquinasVisitadas = (False, False, False, False)
     return (self.startingPosition, esquinasVisitadas)
@@ -297,9 +286,7 @@ class CornersProblem(search.SearchProblem):
     """
     Returns whether this search state is a goal state of the problem
 
-    Actividad 7. La meta se alcanza cuando las 4 esquinas ya fueron
-    visitadas, sin importar en que esquina/posicion este Pac-Man en ese
-    momento -- por eso solo se revisa la segunda mitad del estado.
+    Actividad 7. Meta = las 4 esquinas visitadas, sin importar la posicion.
     """
     _, esquinasVisitadas = state
     return all(esquinasVisitadas)
@@ -315,12 +302,9 @@ class CornersProblem(search.SearchProblem):
      required to get there, and 'stepCost' is the incremental
      cost of expanding to that successor
 
-    Actividad 7. El sucesor ya no es solo la nueva posicion: es el estado
-    completo (nueva posicion, esquinas_visitadas actualizado). Si la nueva
-    posicion coincide con alguna esquina de self.corners que todavia no
-    estaba marcada como visitada, se genera una NUEVA tupla de esquinas
-    visitadas con esa esquina en True (las tuplas son inmutables, por eso
-    no se modifica "visited" en el lugar).
+    Actividad 7. El sucesor es (nueva posicion, esquinas_visitadas
+    actualizado): si la nueva posicion es una esquina pendiente, se marca
+    como visitada en una tupla nueva (las tuplas son inmutables).
     """
 
     successors = []
@@ -366,27 +350,9 @@ class CornersProblem(search.SearchProblem):
 
 def cornersHeuristicBasica(state, problem):
   """
-  Actividad 8 del taller "Busqueda Informada con Pac-Man" -- Heuristica basica.
-
-  Es la formula que sugiere la guia como primera aproximacion: la distancia
-  Manhattan a la esquina pendiente mas lejana.
-
-      h(n) = max_{c en C_p} d_M(posicion, c)
-
-  donde C_p es el conjunto de esquinas que TODAVIA no se han visitado en el
-  estado n (si ya no queda ninguna esquina pendiente, h(n) = 0).
-
-  Admisible: el costo real para visitar todas las esquinas pendientes es,
-  como minimo, el costo de llegar hasta la esquina pendiente mas lejana (en
-  algun momento del recorrido Pac-Man tiene que llegar hasta ella), y la
-  distancia Manhattan nunca sobreestima una distancia real en una
-  cuadricula con paredes: h(n) <= h*(n).
-  Consistente: para cualquier sucesor n' de n (un paso ortogonal, costo 1),
-  si la esquina pendiente mas lejana de n sigue pendiente en n' (no fue la
-  que se acaba de visitar), entonces por la desigualdad triangular de
-  Manhattan d_M(n,c*) <= d_M(n,n') + d_M(n',c*) = 1 + d_M(n',c*) <= 1 + h(n');
-  si la esquina mas lejana de n era justo la que se visito al pasar de n a
-  n', entonces d_M(n,n') = 1 <= 1 + h(n') porque h(n') >= 0 siempre.
+  Actividad 8 -- Heuristica basica: distancia Manhattan a la esquina
+  pendiente mas lejana, h(n) = max d_M(posicion, c) para c en esquinas
+  pendientes. Admisible y consistente (ver docs/guia_codigos_clave.md).
   """
   position, visited = state
   corners = problem.corners
@@ -398,42 +364,12 @@ def cornersHeuristicBasica(state, problem):
 
 def cornersHeuristic(state, problem):
   """
-  Actividad 8 del taller "Busqueda Informada con Pac-Man" -- Heuristica
-  propuesta (version final, la que usa AStarCornersAgent).
-
-  Generaliza la Heuristica basica con el mismo patron usado en foodHeuristic
-  (Actividad 11): en vez de mirar solo la distancia de Pac-Man a la esquina
-  pendiente mas lejana, considera el DIAMETRO (la mayor distancia Manhattan
-  entre cualquier par) del conjunto formado por la posicion actual MAS todas
-  las esquinas pendientes:
-
-      h(n) = max( d_M(n, c) para c en C_p ,  d_M(c_i, c_j) para c_i, c_j en C_p )
-
-  Es mas informativa que la Heuristica basica porque tambien considera que,
-  para visitar dos esquinas pendientes lejanas entre si, Pac-Man tiene que
-  recorrer al menos la distancia real entre ellas en algun momento del
-  camino -- no solo la distancia desde su posicion actual hasta la mas
-  lejana de las dos.
-
-  Admisible y consistente: mismo argumento que en foodHeuristic (Actividad
-  11), aplicado ahora a {posicion} union {esquinas pendientes} en vez de a
-  {posicion} union {comida restante}: el recorrido que visita, en cualquier
-  orden, la posicion n y todas las esquinas de C_p tiene una longitud real
-  que es, como minimo, la distancia real entre el par de puntos mas separado
-  entre si de {n} union C_p; como la distancia Manhattan nunca sobreestima
-  la distancia real, ese diametro en Manhattan es una cota inferior valida:
-  h(n) <= h*(n). La consistencia se sigue del mismo argumento de
-  desigualdad triangular, aplicado a cualquier par de puntos de
-  {n, n'} union C_p (ver docs/sustentacion/actividad08.md para el detalle
-  caso por caso, incluido el caso de visitar una esquina).
-
-  A diferencia de foodHeuristic, aqui NO se usa problem.heuristicInfo como
-  cache: como mucho hay 4 esquinas (nunca mas de 6 pares), y el costo de
-  recalcular todas las distancias entre pares en cada llamada es
-  insignificante -- muy distinto al caso de FoodSearchProblem, donde puede
-  haber decenas de alimentos y cientos de pares. Cachear aqui anadiria la
-  misma sobrecarga de diccionario que en la Actividad 11 no compenso, sin
-  ningun beneficio real dado lo pequeno del conjunto.
+  Actividad 8 -- Heuristica propuesta (la que usa AStarCornersAgent).
+  Generaliza la basica: h(n) = diametro Manhattan de {posicion} union
+  {esquinas pendientes} (la mayor distancia entre cualquier par de ese
+  conjunto). Mas informativa que la basica; admisible y consistente por el
+  mismo argumento que foodHeuristic (ver docs/guia_codigos_clave.md).
+  Sin cache (a lo sumo 4 esquinas, recalcular es insignificante).
   """
   position, visited = state
   corners = problem.corners
@@ -515,23 +451,9 @@ class AStarFoodSearchAgent(SearchAgent):
 
 def foodHeuristicV1(state, problem):
   """
-  Actividad 11 del taller "Busqueda Informada con Pac-Man" -- Heuristica 1.
-
-  Es exactamente la formula que sugiere la guia como primera aproximacion:
-  la distancia Manhattan al alimento mas lejano.
-
-      h(n) = max_{f en F} d_M(n, f)
-
-  Admisible: el costo real para recoger TODA la comida restante es, como
-  minimo, el costo de llegar hasta el alimento mas lejano (en algun momento
-  del recorrido Pac-Man tiene que llegar hasta el), y la distancia Manhattan
-  nunca sobreestima una distancia real en una cuadricula con paredes.
-  Consistente: para cualquier sucesor n' de n (un paso ortogonal, costo 1),
-  si el alimento mas lejano de n sigue presente en n' (no fue el que se
-  comio), entonces por la desigualdad triangular de Manhattan
-  d_M(n,f*) <= d_M(n,n') + d_M(n',f*) = 1 + d_M(n',f*) <= 1 + h(n'); si el
-  alimento mas lejano de n era justo el que estaba en n' (se acaba de
-  comer), entonces d_M(n,n') = 1 <= 1 + h(n') porque h(n') >= 0 siempre.
+  Actividad 11 -- Heuristica 1: distancia Manhattan al alimento mas
+  lejano, h(n) = max d_M(n, f) para f en la comida restante. Admisible y
+  consistente (ver docs/guia_codigos_clave.md).
   """
   position, foodGrid = state
   foodList = foodGrid.asList()
@@ -542,40 +464,12 @@ def foodHeuristicV1(state, problem):
 
 def foodHeuristic(state, problem):
   """
-  Actividad 11 del taller "Busqueda Informada con Pac-Man" -- Heuristica 2
-  (version final, la que usa AStarFoodSearchAgent).
-
-  Generaliza la Heuristica 1: en vez de mirar solo la distancia de Pac-Man
-  al alimento mas lejano, considera el DIAMETRO (la mayor distancia
-  Manhattan entre cualquier par) del conjunto formado por la posicion
-  actual MAS todos los alimentos restantes:
-
-      h(n) = max( d_M(n, f) para f en F ,  d_M(f_i, f_j) para f_i, f_j en F )
-
-  Es mas informativa que la Heuristica 1 porque tambien considera que, para
-  visitar dos alimentos lejanos entre si, Pac-Man tiene que recorrer al
-  menos la distancia real entre ellos en algun momento del camino --no solo
-  la distancia desde su posicion actual hasta el mas lejano de los dos--.
-
-  Admisible y consistente: el recorrido que visita, en cualquier orden, la
-  posicion n y todos los alimentos de F tiene una longitud real que es, como
-  minimo, la distancia real entre el par de puntos (de {n} union F) mas
-  separado entre si (en algun momento del recorrido Pac-Man pasa por ambos
-  puntos de ese par). Como la distancia Manhattan nunca sobreestima la
-  distancia real, el diametro en Manhattan de {n} union F es una cota
-  inferior valida: h(n) <= h*(n). La consistencia se sigue del mismo
-  argumento de desigualdad triangular que en la Heuristica 1, aplicado ahora
-  a cualquier par de puntos de {n, n'} union F (ver docs/sustentacion/actividad11.md
-  para el detalle caso por caso, incluido el caso de comerse un alimento).
-
-  Optimizacion con cache (problem.heuristicInfo): el calculo que se repite
-  en CADA llamada a esta heuristica (una por cada nodo expandido, miles de
-  veces) es la distancia Manhattan entre cada PAR de alimentos. Pero las
-  posiciones de los alimentos nunca cambian durante la busqueda -- solo si
-  siguen presentes o no --, asi que esas distancias se pueden calcular UNA
-  SOLA VEZ (para todos los pares de alimentos del layout inicial) y
-  reutilizarse en cada llamada, en vez de recalcular la formula de distancia
-  una y otra vez para el mismo par de alimentos.
+  Actividad 11 -- Heuristica 2 (la que usa AStarFoodSearchAgent). Generaliza
+  la Heuristica 1: h(n) = diametro Manhattan de {posicion} union {comida
+  restante}. Mas informativa; admisible y consistente (ver
+  docs/guia_codigos_clave.md). Usa problem.heuristicInfo como cache: las
+  distancias entre pares de alimentos no cambian durante la busqueda, asi
+  que se calculan una sola vez en vez de en cada llamada.
   """
   position, foodGrid = state
   foodList = foodGrid.asList()
@@ -610,12 +504,8 @@ def foodHeuristic(state, problem):
 
 def foodHeuristicV2SinCache(state, problem):
   """
-  Misma Heuristica 2 (diametro Manhattan de {posicion} union {comida
-  restante}), pero SIN usar problem.heuristicInfo: recalcula la distancia
-  Manhattan entre cada par de alimentos restantes en cada llamada, en vez de
-  reutilizar el diccionario precalculado. Existe solo para el experimento de
-  la Actividad 11 que compara el tiempo de ejecucion con y sin cache; no la
-  usa ningun SearchAgent.
+  Misma Heuristica 2, pero sin cache (recalcula todo en cada llamada).
+  Solo para el experimento de Actividad 11 que compara tiempos con/sin cache.
   """
   position, foodGrid = state
   foodList = foodGrid.asList()
