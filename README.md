@@ -57,14 +57,21 @@ GrupoIA_Pacman/
 │                            #   de todos los numeros citados en el informe.
 │
 ├── docs/
-│   └── latex/
-│       ├── informe.tex     # Documento maestro: portada, tabla de contenido, bibliografia. Enlaza
-│       │                   #   (\input) cada seccion en el orden en que se leen.
-│       ├── secciones/
-│       │   └── actividadNN_*.tex   # Una seccion por actividad: procedimiento, resultados, tabla y
-│       │                            #   analisis. Se agregan incrementalmente sin tocar informe.tex.
-│       ├── capturas/*.png  # Pantallazos de codigo referenciados desde las secciones
-│       └── informe.pdf     # PDF compilado, listo para el entregable
+│   ├── latex/
+│   │   ├── informe.tex     # Documento maestro: portada, tabla de contenido, bibliografia. Enlaza
+│   │   │                   #   (\input) cada seccion en el orden en que se leen.
+│   │   ├── secciones/
+│   │   │   └── actividadNN_*.tex   # Una seccion por actividad: procedimiento, resultados, tabla y
+│   │   │                            #   analisis. Se agregan incrementalmente sin tocar informe.tex.
+│   │   ├── capturas/*.png  # Pantallazos de codigo referenciados desde las secciones
+│   │   └── informe.pdf     # PDF compilado, listo para el entregable
+│   ├── guia_codigos_clave.md   # Explicacion por actividad: que hace el codigo, como funciona, por
+│   │                            #   que se hizo asi y como afecta a los resultados. Material de estudio
+│   │                            #   del grupo (no forma parte del entregable al profesor).
+│   ├── guia_comandos.md    # Comando para ver los datos y comando para ver el Pac-Man graficamente,
+│   │                        #   por cada actividad. Tambien material de estudio del grupo.
+│   └── sustentacion/       # Notas de preparacion para la exposicion, una por actividad: que preguntar
+│                            #   podria hacer el profesor y como responderlas.
 │
 ├── entregable/
 │   ├── empaquetar.sh       # Genera el zip final con la estructura exacta que exige el enunciado
