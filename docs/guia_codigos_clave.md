@@ -488,10 +488,12 @@ hace falta diseñar una heurística no trivial en la Actividad 11.
 
 ## Actividad 11. Heurísticas para FoodSearchProblem
 
-**📸 Qué capturar (2 pantallazos):**
+**📸 Qué capturar (3 pantallazos):**
 - `pacman/searchAgents.py`, líneas 452-464, `foodHeuristicV1`.
-- `pacman/searchAgents.py`, líneas 465-504, `foodHeuristic` (con caché;
-  la que usa `AStarFoodSearchAgent`).
+- `foodHeuristic` (con caché; la que usa `AStarFoodSearchAgent`) no entra
+  completa en una sola pantalla, así que va en 2 capturas: líneas 465-488
+  (parte 1, construcción del caché) y líneas 490-502 (parte 2, uso del
+  caché y cálculo final de `maxDist`).
 
 ```python
 def foodHeuristicV1(state, problem):

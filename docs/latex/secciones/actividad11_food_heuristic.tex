@@ -36,11 +36,19 @@ momento del camino --no solo la distancia desde su posición actual hasta el má
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{capturas/actividad11_heuristica2.png}
+\includegraphics[width=0.9\textwidth]{capturas/actividad11_heuristica2_parte1.png}
 \caption{\texttt{foodHeuristic} (Heurística 2, con caché en \texttt{problem.heuristicInfo}) en
-\texttt{pacman/searchAgents.py} (líneas 465-504). El bloque
+\texttt{pacman/searchAgents.py} (líneas 465-488, parte 1 de 2). El bloque
 \texttt{if 'foodPairDistances' not in problem.heuristicInfo} es el caché discutido más abajo.}
-\label{fig:act11-h2}
+\label{fig:act11-h2-p1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{capturas/actividad11_heuristica2_parte2.png}
+\caption{\texttt{foodHeuristic} (líneas 490-502, parte 2 de 2): uso del caché ya calculado
+(\texttt{distanciasComida}) para obtener \texttt{maxDist} y el \texttt{return} final.}
+\label{fig:act11-h2-p2}
 \end{figure}
 
 \textbf{Admisibilidad:} el recorrido que visita, en cualquier orden, la posición $n$ y todos los

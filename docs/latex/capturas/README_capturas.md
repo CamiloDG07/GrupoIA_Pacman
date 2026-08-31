@@ -35,7 +35,8 @@ recompilar cada vez para ver el avance.
 | `actividad08_heuristica_propuesta.png` | `cornersHeuristic` | `pacman/searchAgents.py` | 365-389 |
 | `actividad10_food_isgoal.png` | `FoodSearchProblem.__init__`/`isGoalState` | `pacman/searchAgents.py` | 396-417 |
 | `actividad11_heuristica1.png` | `foodHeuristicV1` | `pacman/searchAgents.py` | 452-464 |
-| `actividad11_heuristica2.png` | `foodHeuristic` (con caché) | `pacman/searchAgents.py` | 465-504 |
+| `actividad11_heuristica2_parte1.png` | `foodHeuristic` (con caché, parte 1 de 2) | `pacman/searchAgents.py` | 465-488 |
+| `actividad11_heuristica2_parte2.png` | `foodHeuristic` (con caché, parte 2 de 2) | `pacman/searchAgents.py` | 490-502 |
 
 Para el detalle de **qué explicar de cada pantallazo** (qué hace, por qué se
 hizo así, y cómo afecta a los resultados), ver `docs/guia_codigos_clave.md`
