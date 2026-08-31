@@ -21,9 +21,18 @@ desempate documentado en la Actividad 3 precisamente porque no es comparable).
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{capturas/actividad07_corners.png}
-\caption{\texttt{getStartState}, \texttt{isGoalState} y \texttt{getSuccessors} de
-\texttt{CornersProblem} en \texttt{pacman/searchAgents.py} (líneas 273-336).}
+\caption{\texttt{getStartState}, \texttt{isGoalState} y el inicio de \texttt{getSuccessors} de
+\texttt{CornersProblem} en \texttt{pacman/searchAgents.py} (líneas 273-309, parte 1 de 2).}
 \label{fig:act07-corners}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{capturas/actividad07_corners2.png}
+\caption{Resto de \texttt{getSuccessors} de \texttt{CornersProblem} en
+\texttt{pacman/searchAgents.py} (líneas 309-336, parte 2 de 2): construcción del sucesor
+\texttt{(nueva posición, esquinas\_visitadas actualizado)}.}
+\label{fig:act07-corners2}
 \end{figure}
 
 La meta se alcanza cuando \texttt{all(esquinas\_visitadas)} es verdadero --las 4 esquinas ya se

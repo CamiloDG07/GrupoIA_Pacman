@@ -30,7 +30,8 @@ recompilar cada vez para ver el avance.
 | `actividad03_astar.png` | `aStarSearch` | `pacman/search.py` | 129-172 |
 | `actividad05_manhattan.png` | `manhattanHeuristic` | `pacman/searchAgents.py` | 236-240 |
 | `actividad06_euclidiana.png` | `euclideanHeuristic` | `pacman/searchAgents.py` | 242-246 |
-| `actividad07_corners.png` | `getStartState`/`isGoalState`/`getSuccessors` de `CornersProblem` | `pacman/searchAgents.py` | 273-336 |
+| `actividad07_corners.png` | `getStartState`/`isGoalState`/inicio de `getSuccessors` de `CornersProblem` (parte 1 de 2) | `pacman/searchAgents.py` | 273-309 |
+| `actividad07_corners2.png` | Resto de `getSuccessors` de `CornersProblem` (parte 2 de 2) | `pacman/searchAgents.py` | 309-336 |
 | `actividad08_heuristica_basica.png` | `cornersHeuristicBasica` | `pacman/searchAgents.py` | 351-364 |
 | `actividad08_heuristica_propuesta.png` | `cornersHeuristic` | `pacman/searchAgents.py` | 365-389 |
 | `actividad10_food_isgoal.png` | `FoodSearchProblem.__init__`/`isGoalState` | `pacman/searchAgents.py` | 396-417 |

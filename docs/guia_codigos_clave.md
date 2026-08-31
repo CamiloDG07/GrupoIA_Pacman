@@ -291,8 +291,11 @@ mejor la búsqueda sin dejar de ser admisible.
 
 ## Actividad 7. Problema de las cuatro esquinas — diseño del estado
 
-**📸 Qué capturar:** `pacman/searchAgents.py`, líneas 273-336:
-`getStartState`, `isGoalState`, `getSuccessors` de `CornersProblem`.
+**📸 Qué capturar (2 pantallazos):** `pacman/searchAgents.py`, `getStartState`,
+`isGoalState` y `getSuccessors` de `CornersProblem` no entran completas en una
+sola pantalla, así que van en 2 capturas: líneas 273-309 (parte 1: `getStartState`,
+`isGoalState` y el inicio de `getSuccessors`) y líneas 309-336 (parte 2: resto
+de `getSuccessors`, la construcción del sucesor).
 
 ```python
 def getStartState(self):
