@@ -25,45 +25,13 @@ componentes sobre el layout \texttt{tinyMaze.lay}:
 [C]  Costo: 1 por movimiento
 \end{verbatim}
 
-\subsection{De donde sale el estado inicial (1,7)}
+\subsection{De donde sale el estado inicial (9,1)}
 
-El estado inicial $(1,7)$ no se calculo a mano: sale directamente del archivo de layout
-\texttt{pacman/layouts/tinyMaze.lay}, que dibuja el laberinto con caracteres de texto:
-
-\begin{verbatim}
-%%%%%%%%%%%
-%P%.....%.%
-%.%.%%%.%.%
-%.%......%%
-%.%..%....%
-%...%.%%% %
-%%%....%% %
-%.        %
-%%%%%%%%%%%
-\end{verbatim}
-
-La letra \texttt{P} marca la posicion de Pac-Man. La conversion de esa posicion en el texto a
-coordenadas $(x,y)$ sigue dos reglas:
-
-\begin{itemize}
-\item \textbf{$x$} es la columna, contada normalmente desde la izquierda empezando en 0. La
-  \texttt{P} esta en la columna 1 (segunda columna) $\Rightarrow x=1$.
-\item \textbf{$y$} es la fila, pero contada \emph{desde abajo hacia arriba}, empezando en 0 en la
-  ultima fila del archivo (el origen $(0,0)$ es la esquina inferior izquierda, no la superior). El
-  layout tiene 9 filas (indices 0 a 8 contando desde arriba); la \texttt{P} esta en la fila de
-  indice 1 desde arriba, que equivale a $8-1=7$ desde abajo $\Rightarrow y=7$.
-\end{itemize}
-
-Por eso el estado inicial es $(1,7)$. Esta conversion la hace internamente \texttt{layout.py} (codigo
-del profesor, sin modificar) al cargar el archivo \texttt{.lay}; \texttt{getStartState()} de
-\texttt{PositionSearchProblem} solo devuelve el resultado ya calculado. El mismo procedimiento
-aplica para leer el estado inicial de cualquier otro layout usado en el resto del informe.
-
-\paragraph{Verificacion adicional con varios agentes: \texttt{mediumClassic}.}
-Para confirmar la convencion con un layout mas grande y con mas de un agente (Pac-Man y dos
-fantasmas), se muestra a continuacion \texttt{pacman/layouts/mediumClassic.lay} completo, con las
-11 filas numeradas de 0 a 10 desde arriba, para poder contar $x$ (columna, desde la izquierda) e
-$y$ (fila, desde abajo) a simple vista y no solo sobre la fila donde esta cada agente:
+El estado inicial $(9,1)$ no se calculo a mano: sale directamente del archivo de layout
+\texttt{pacman/layouts/mediumClassic.lay} (el layout que \texttt{pacman.py} carga por defecto al
+ejecutarse sin argumentos), que dibuja el laberinto con caracteres de texto. Se muestra completo,
+con las 11 filas numeradas de 0 a 10 desde arriba, para poder contar $x$ (columna, desde la
+izquierda) e $y$ (fila, desde abajo) a simple vista:
 
 \begin{verbatim}
 fila  0: %%%%%%%%%%%%%%%%%%%%
@@ -79,12 +47,25 @@ fila  9: %....%...P....%...o%
 fila 10: %%%%%%%%%%%%%%%%%%%%
 \end{verbatim}
 
-La \texttt{P} esta en la fila 9, columna 9 (contando desde 0 en ambos casos) $\Rightarrow x=9$,
-$y = 10-9 = 1$ $\Rightarrow$ posicion $(9,1)$. Las dos \texttt{G} estan en la fila 5, columnas 8 y
-11 $\Rightarrow y = 10-5 = 5$ $\Rightarrow$ posiciones $(8,5)$ y $(11,5)$.
+La letra \texttt{P} marca la posicion de Pac-Man. La conversion de esa posicion en el texto a
+coordenadas $(x,y)$ sigue dos reglas:
 
-Esto se confirmo programaticamente (comando ejecutado desde dentro de \texttt{pacman/}, porque
-\texttt{layout.py} busca la carpeta \texttt{layouts/} relativa al directorio de trabajo actual):
+\begin{itemize}
+\item \textbf{$x$} es la columna, contada normalmente desde la izquierda empezando en 0. La
+  \texttt{P} esta en la fila 9, columna 9 $\Rightarrow x=9$.
+\item \textbf{$y$} es la fila, pero contada \emph{desde abajo hacia arriba}, empezando en 0 en la
+  ultima fila del archivo (el origen $(0,0)$ es la esquina inferior izquierda, no la superior). El
+  layout tiene 11 filas (indices 0 a 10 contando desde arriba); la \texttt{P} esta en la fila de
+  indice 9 desde arriba, que equivale a $10-9=1$ desde abajo $\Rightarrow y=1$.
+\end{itemize}
+
+Por eso el estado inicial es $(9,1)$.
+
+\paragraph{Verificacion adicional con varios agentes.} Este mismo layout permite confirmar la
+convencion con mas de un agente: las dos \texttt{G} (fantasmas) estan en la fila 5, columnas 8 y
+11 $\Rightarrow y = 10-5 = 5 \Rightarrow$ posiciones $(8,5)$ y $(11,5)$. Esto se confirmo
+programaticamente (comando ejecutado desde dentro de \texttt{pacman/}, porque \texttt{layout.py}
+busca la carpeta \texttt{layouts/} relativa al directorio de trabajo actual):
 
 \begin{verbatim}
 python -c "
@@ -95,9 +76,14 @@ print(layout_module.getLayout('mediumClassic').agentPositions)
 \end{verbatim}
 
 \texttt{agentPositions} es una lista de pares (\texttt{esPacman}, \texttt{posicion}): el primer
-elemento, con \texttt{True}, es Pac-Man en $(9,1)$; los otros dos, con \texttt{False}, son los dos
-fantasmas del layout en $(8,5)$ y $(11,5)$ -- exactamente lo contado a mano sobre el layout de
-arriba.
+elemento, con \texttt{True}, es Pac-Man en $(9,1)$ --confirmando el calculo manual de arriba--; los
+otros dos, con \texttt{False}, son los dos fantasmas en $(8,5)$ y $(11,5)$.
+
+Esta conversion la hace internamente \texttt{layout.py} (codigo del profesor, sin modificar) al
+cargar el archivo \texttt{.lay}; \texttt{getStartState()} de \texttt{PositionSearchProblem} solo
+devuelve el resultado ya calculado. El mismo procedimiento aplica para leer el estado inicial de
+cualquier otro layout usado en el resto del informe --por ejemplo \texttt{tinyMaze}, usado en la
+seccion anterior, donde el mismo metodo da $(1,7)$--.
 
 \subsection{Componentes del problema de busqueda}
 
@@ -110,8 +96,9 @@ arriba.
 \textbf{Elemento} & \textbf{Descripcion} \\
 \midrule
 Estado ($s$) & Posicion $(x, y)$ de Pac-Man dentro del laberinto. \\
-Estado inicial ($s_0$) & Posicion en la que Pac-Man aparece al iniciar (depende del layout; \\
- & p. ej. $(1,7)$ en \texttt{tinyMaze}). \\
+Estado inicial ($s_0$) & Posicion en la que Pac-Man aparece al iniciar (depende del layout; al \\
+ & ejecutar \texttt{python pacman.py} sin argumentos, carga \texttt{mediumClassic} \\
+ & por defecto, donde $s_0=(9,1)$). \\
 Acciones ($A$) & $\{North, South, East, West\}$; una accion solo es legal si la celda \\
  & vecina en esa direccion no es pared. \\
 Funcion sucesor ($T$) & \texttt{getSuccessors(state)}: por cada accion legal retorna la terna \\
