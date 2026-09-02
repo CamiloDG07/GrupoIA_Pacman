@@ -59,6 +59,46 @@ del profesor, sin modificar) al cargar el archivo \texttt{.lay}; \texttt{getStar
 \texttt{PositionSearchProblem} solo devuelve el resultado ya calculado. El mismo procedimiento
 aplica para leer el estado inicial de cualquier otro layout usado en el resto del informe.
 
+\paragraph{Verificacion adicional con varios agentes: \texttt{mediumClassic}.}
+Para confirmar la convencion con un layout mas grande y con mas de un agente (Pac-Man y dos
+fantasmas), se muestra a continuacion \texttt{pacman/layouts/mediumClassic.lay} completo, con las
+11 filas numeradas de 0 a 10 desde arriba, para poder contar $x$ (columna, desde la izquierda) e
+$y$ (fila, desde abajo) a simple vista y no solo sobre la fila donde esta cada agente:
+
+\begin{verbatim}
+fila  0: %%%%%%%%%%%%%%%%%%%%
+fila  1: %o...%........%....%
+fila  2: %.%%.%.%%%%%%.%.%%.%
+fila  3: %.%..............%.%
+fila  4: %.%.%%.%%  %%.%%.%.%
+fila  5: %......%G  G%......%
+fila  6: %.%.%%.%%%%%%.%%.%.%
+fila  7: %.%..............%.%
+fila  8: %.%%.%.%%%%%%.%.%%.%
+fila  9: %....%...P....%...o%
+fila 10: %%%%%%%%%%%%%%%%%%%%
+\end{verbatim}
+
+La \texttt{P} esta en la fila 9, columna 9 (contando desde 0 en ambos casos) $\Rightarrow x=9$,
+$y = 10-9 = 1$ $\Rightarrow$ posicion $(9,1)$. Las dos \texttt{G} estan en la fila 5, columnas 8 y
+11 $\Rightarrow y = 10-5 = 5$ $\Rightarrow$ posiciones $(8,5)$ y $(11,5)$.
+
+Esto se confirmo programaticamente (comando ejecutado desde dentro de \texttt{pacman/}, porque
+\texttt{layout.py} busca la carpeta \texttt{layouts/} relativa al directorio de trabajo actual):
+
+\begin{verbatim}
+python -c "
+import layout as layout_module
+print(layout_module.getLayout('mediumClassic').agentPositions)
+"
+[(True, (9, 1)), (False, (8, 5)), (False, (11, 5))]
+\end{verbatim}
+
+\texttt{agentPositions} es una lista de pares (\texttt{esPacman}, \texttt{posicion}): el primer
+elemento, con \texttt{True}, es Pac-Man en $(9,1)$; los otros dos, con \texttt{False}, son los dos
+fantasmas del layout en $(8,5)$ y $(11,5)$ -- exactamente lo contado a mano sobre el layout de
+arriba.
+
 \subsection{Componentes del problema de busqueda}
 
 \begin{table}[H]
