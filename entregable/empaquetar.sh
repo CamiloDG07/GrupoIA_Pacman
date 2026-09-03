@@ -26,11 +26,10 @@ cp pacman/search.py "$STAGE/"
 cp pacman/searchAgents.py "$STAGE/"
 cp resultados/resultados.csv "$STAGE/"
 
-if [ -f docs/latex/informe.pdf ]; then
-    cp docs/latex/informe.pdf "$STAGE/"
+if [ -f informe.pdf ]; then
+    cp informe.pdf "$STAGE/"
 else
-    echo "AVISO: no existe docs/latex/informe.pdf. Compile primero:"
-    echo "  cd docs/latex && pdflatex informe.tex && pdflatex informe.tex"
+    echo "AVISO: no existe informe.pdf en la raiz del repositorio."
     exit 1
 fi
 

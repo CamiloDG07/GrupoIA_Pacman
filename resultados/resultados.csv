@@ -1,33 +1,33 @@
-actividad,metodo_heuristica,layout,costo,longitud_camino,nodos_expandidos,tiempo_seg,optimo
-10,A*+h(n)=0,tinySearch,8,8,16,0.000303,si
-10,A*+h(n)=0,testClassic,16,16,2598,0.061340,si
-10,UCS,tinySearch,8,8,16,0.000393,si
-10,UCS,testClassic,16,16,2598,0.063502,si
-11,H2_con_cache,testClassic,-,-,383,0.015458,si
-11,H2_con_cache,capsuleClassic,-,-,2185,0.207050,si
-11,H2_sin_cache,testClassic,-,-,383,0.014835,si
-11,H2_sin_cache,capsuleClassic,-,-,2185,0.193121,si
-11,Heuristica 1,tinySearch,8,8,8,0.000274,si
-11,Heuristica 1,testClassic,16,16,702,0.024714,si
-11,Heuristica 2,tinySearch,8,8,8,0.000237,si
-11,Heuristica 2,testClassic,16,16,383,0.014872,si
-11,h(n)=0,tinySearch,8,8,16,0.000437,si
-11,h(n)=0,testClassic,16,16,2598,0.070222,si
-2,UCS,mediumClassic,12,12,69,0.000492,si
-2,UCS,mediumMaze,30,30,32,0.000270,si
-2,UCS,tinyMaze,10,10,21,0.000182,si
-4,A*+h=0,mediumClassic,12,12,69,0.000222,si
-4,UCS,mediumClassic,12,12,69,0.000257,si
-5,A*+Manhattan,mediumClassic,12,12,15,0.000068,si
-5,UCS,mediumClassic,12,12,69,0.000251,si
-6,Euclidiana,mediumClassic,12,12,16,0.000070,si
-6,Manhattan,mediumClassic,12,12,15,0.000066,si
-6,h(n)=0,mediumClassic,12,12,69,0.000262,si
-7,UCS,tinyCorners,22,22,295,0.001300,si
-8,Heuristica basica,tinyCorners,22,22,147,0.000832,si
-8,Heuristica propuesta,tinyCorners,22,22,119,0.000802,si
-8,h(n)=0,tinyCorners,22,22,295,0.001486,si
-9,A* + h=0,tinyCorners,22,22,295,0.001887,si
-9,A* + heuristica basica,tinyCorners,22,22,147,0.001370,si
-9,A* + heuristica propuesta,tinyCorners,22,22,119,0.001297,si
-9,UCS,tinyCorners,22,22,295,0.002134,si
+actividad,metodo_heuristica,layout,costo,longitud_camino,nodos_expandidos,nodos_en_memoria,memoria_bytes,tiempo_seg,optimo
+10,A*+h(n)=0,tinySearch,8,8,16,20,23928,0.000630,si
+10,A*+h(n)=0,testClassic,16,16,2598,3394,3228000,0.113895,si
+10,UCS,tinySearch,8,8,16,20,23944,0.000661,si
+10,UCS,testClassic,16,16,2598,3394,3228024,0.112720,si
+11,H2_con_cache,testClassic,-,-,383,931,659592,0.028292,si
+11,H2_con_cache,capsuleClassic,-,-,2185,3316,7468424,0.378493,si
+11,H2_sin_cache,testClassic,-,-,383,931,657392,0.034120,si
+11,H2_sin_cache,capsuleClassic,-,-,2185,3316,7416056,0.368943,si
+11,Heuristica 1,tinySearch,8,8,8,12,12760,0.000481,si
+11,Heuristica 1,testClassic,16,16,702,1506,1146296,0.043935,si
+11,Heuristica 2,tinySearch,8,8,8,12,12744,0.000483,si
+11,Heuristica 2,testClassic,16,16,383,931,659632,0.026433,si
+11,h(n)=0,tinySearch,8,8,16,20,23872,0.000642,si
+11,h(n)=0,testClassic,16,16,2598,3394,3227928,0.118677,si
+2,UCS,mediumMaze,30,30,32,34,4336,0.000373,si
+2,UCS,mediumClassic,12,12,69,93,13184,0.000563,si
+2,UCS,tinyMaze,10,10,21,33,3520,0.000183,si
+4,A*+h=0,mediumClassic,12,12,69,93,7952,0.000531,si
+4,UCS,mediumClassic,12,12,69,93,7984,0.000524,si
+5,A*+Manhattan,mediumClassic,12,12,15,25,2968,0.000152,si
+5,UCS,mediumClassic,12,12,69,93,7904,0.000503,si
+6,Euclidiana,mediumClassic,12,12,16,26,2952,0.000170,si
+6,Manhattan,mediumClassic,12,12,15,25,2904,0.000149,si
+6,h(n)=0,mediumClassic,12,12,69,93,7896,0.000521,si
+7,UCS,tinyCorners,22,22,295,359,17800,0.002243,si
+8,Heuristica basica,tinyCorners,22,22,147,195,18032,0.001543,si
+8,Heuristica propuesta,tinyCorners,22,22,119,163,8680,0.001397,si
+8,h(n)=0,tinyCorners,22,22,295,359,17760,0.002231,si
+9,A* + h=0,tinyCorners,22,22,295,359,17616,0.002208,si
+9,A* + heuristica basica,tinyCorners,22,22,147,195,17912,0.001543,si
+9,A* + heuristica propuesta,tinyCorners,22,22,119,163,8576,0.001448,si
+9,UCS,tinyCorners,22,22,295,359,17648,0.002174,si

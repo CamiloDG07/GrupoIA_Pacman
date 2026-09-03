@@ -101,6 +101,7 @@ class SearchAgent(Agent):
     totalCost = problem.getCostOfActions(self.actions)
     print(('Path found with total cost of %d in %.1f seconds' % (totalCost, time.time() - starttime)))
     if '_expanded' in dir(problem): print(('Search nodes expanded: %d' % problem._expanded))
+    if '_maxMemory' in dir(problem): print(('Max nodes in memory: %d' % problem._maxMemory))
     
   def getAction(self, state):
     """
@@ -271,51 +272,20 @@ class CornersProblem(search.SearchProblem):
     
     
   def getStartState(self):
-    """
-    Returns the start state (in your state space, not the full Pacman state space)
-
-    Actividad 7. El estado es (posicion, esquinas_visitadas): una posicion
-    (x,y) mas una tupla de 4 booleanos (una por esquina, mismo orden que
-    self.corners). No basta con (x,y) solo, porque dos visitas al mismo
-    punto con distintas esquinas ya marcadas no son equivalentes aqui.
-    """
+    "Estado: (posicion, esquinas_visitadas) con 4 booleanos."
     esquinasVisitadas = (False, False, False, False)
     return (self.startingPosition, esquinasVisitadas)
 
   def isGoalState(self, state):
-    """
-    Returns whether this search state is a goal state of the problem
-
-    Actividad 7. Meta = las 4 esquinas visitadas, sin importar la posicion.
-    """
+    "Meta: las 4 esquinas visitadas."
     _, esquinasVisitadas = state
     return all(esquinasVisitadas)
 
   def getSuccessors(self, state):
-    """
-    Returns successor states, the actions they require, and a cost of 1.
-
-     As noted in search.py:
-         For a given state, this should return a list of triples,
-     (successor, action, stepCost), where 'successor' is a
-     successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental
-     cost of expanding to that successor
-
-    Actividad 7. El sucesor es (nueva posicion, esquinas_visitadas
-    actualizado): si la nueva posicion es una esquina pendiente, se marca
-    como visitada en una tupla nueva (las tuplas son inmutables).
-    """
-
+    "Returns successor states, the actions they require, and a cost of 1."
     successors = []
     position, visited = state
     for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-      # Add a successor state to the successor list if the action is legal
-      # Here's a code snippet for figuring out whether a new position hits a wall:
-      #   x,y = currentPosition
-      #   dx, dy = Actions.directionToVector(action)
-      #   nextx, nexty = int(x + dx), int(y + dy)
-      #   hitsWall = self.walls[nextx][nexty]
       x, y = position
       dx, dy = Actions.directionToVector(action)
       nextx, nexty = int(x + dx), int(y + dy)
@@ -349,11 +319,7 @@ class CornersProblem(search.SearchProblem):
 
 
 def cornersHeuristicBasica(state, problem):
-  """
-  Actividad 8 -- Heuristica basica: distancia Manhattan a la esquina
-  pendiente mas lejana, h(n) = max d_M(posicion, c) para c en esquinas
-  pendientes. Admisible y consistente (ver docs/guia_codigos_clave.md).
-  """
+  "Heuristica basica: distancia Manhattan a la esquina pendiente mas lejana."
   position, visited = state
   corners = problem.corners
   pendientes = [c for c, v in zip(corners, visited) if not v]
@@ -363,14 +329,7 @@ def cornersHeuristicBasica(state, problem):
 
 
 def cornersHeuristic(state, problem):
-  """
-  Actividad 8 -- Heuristica propuesta (la que usa AStarCornersAgent).
-  Generaliza la basica: h(n) = diametro Manhattan de {posicion} union
-  {esquinas pendientes} (la mayor distancia entre cualquier par de ese
-  conjunto). Mas informativa que la basica; admisible y consistente por el
-  mismo argumento que foodHeuristic (ver docs/guia_codigos_clave.md).
-  Sin cache (a lo sumo 4 esquinas, recalcular es insignificante).
-  """
+  "Heuristica propuesta: diametro Manhattan de {posicion} union {esquinas pendientes}."
   position, visited = state
   corners = problem.corners
   pendientes = [c for c, v in zip(corners, visited) if not v]
@@ -450,11 +409,7 @@ class AStarFoodSearchAgent(SearchAgent):
     self.searchType = FoodSearchProblem
 
 def foodHeuristicV1(state, problem):
-  """
-  Actividad 11 -- Heuristica 1: distancia Manhattan al alimento mas
-  lejano, h(n) = max d_M(n, f) para f en la comida restante. Admisible y
-  consistente (ver docs/guia_codigos_clave.md).
-  """
+  "Heuristica 1: distancia Manhattan al alimento mas lejano."
   position, foodGrid = state
   foodList = foodGrid.asList()
   if not foodList:
@@ -463,14 +418,7 @@ def foodHeuristicV1(state, problem):
 
 
 def foodHeuristic(state, problem):
-  """
-  Actividad 11 -- Heuristica 2 (la que usa AStarFoodSearchAgent). Generaliza
-  la Heuristica 1: h(n) = diametro Manhattan de {posicion} union {comida
-  restante}. Mas informativa; admisible y consistente (ver
-  docs/guia_codigos_clave.md). Usa problem.heuristicInfo como cache: las
-  distancias entre pares de alimentos no cambian durante la busqueda, asi
-  que se calculan una sola vez en vez de en cada llamada.
-  """
+  "Heuristica 2: diametro Manhattan de {posicion} union {comida restante}, con cache en problem.heuristicInfo."
   position, foodGrid = state
   foodList = foodGrid.asList()
   if not foodList:
@@ -503,10 +451,7 @@ def foodHeuristic(state, problem):
 
 
 def foodHeuristicV2SinCache(state, problem):
-  """
-  Misma Heuristica 2, pero sin cache (recalcula todo en cada llamada).
-  Solo para el experimento de Actividad 11 que compara tiempos con/sin cache.
-  """
+  "Heuristica 2 sin cache, para comparar tiempos con/sin cache."
   position, foodGrid = state
   foodList = foodGrid.asList()
   if not foodList:
@@ -622,25 +567,13 @@ def mazeDistance(point1, point2, gameState):
   return len(search.bfs(prob))
 
 
-##############################################################################
-# Demos autonomos (actividades 1-11), para que el entregable final          #
-# (search.py + searchAgents.py + resultados.csv + informe.pdf) reproduzca   #
-# por si solo, sobre el proyecto base del profesor, todos los datos de cada #
-# actividad, sin depender de ninguna otra carpeta del repositorio. Cada     #
-# demo_actividadN() usa el mismo layout, algoritmo/heuristica y formato de  #
-# salida que se documenta en el informe (docs/latex/secciones/), y guarda   #
-# sus filas con un resultados.csv propio (ver _guardar_fila_demo).          #
-##############################################################################
+#####################################################################
+# Demos autonomos (actividades 1-11): reproducen todos los datos    #
+# del informe y los guardan en resultados.csv (ver _guardar_fila_demo).
+#####################################################################
 
 def _guardar_fila_demo(fila):
-  """
-  Inserta o reemplaza una fila en un resultados.csv del directorio de
-  trabajo actual (NO resultados/resultados.csv: esa subcarpeta no existe
-  cuando esto se corre solo con los 4 archivos del zip de entrega puestos
-  sobre el proyecto base del profesor). Mismas columnas y misma regla de
-  deduplicacion que la tabla oficial del repositorio: por
-  (actividad, metodo_heuristica, layout).
-  """
+  "Inserta o reemplaza una fila en resultados.csv, deduplicando por (actividad, metodo_heuristica, layout)."
   import csv
   import os
 
@@ -651,6 +584,8 @@ def _guardar_fila_demo(fila):
     "costo",
     "longitud_camino",
     "nodos_expandidos",
+    "nodos_en_memoria",
+    "memoria_bytes",
     "tiempo_seg",
     "optimo",
   ]
@@ -676,14 +611,7 @@ def _guardar_fila_demo(fila):
 
 
 def _demo_estado(layout_name):
-  """
-  Construye el GameState inicial para un layout (numGhostAgents=0, igual
-  en las 11 actividades). Import local de layout y pacman
-  (no al inicio del archivo): pacman.py ya hace 'import searchAgents' a
-  nivel de modulo, asi que un 'import pacman' de searchAgents.py a nivel de
-  modulo formaria un ciclo; como import local, para cuando esta funcion se
-  ejecuta pacman.py ya termino de cargar, asi que no hay riesgo.
-  """
+  "Construye el GameState inicial para un layout (numGhostAgents=0)."
   import layout as layout_module
   import pacman
 
@@ -758,6 +686,9 @@ def demo_actividad2(layout_name="mediumMaze"):
   costo = problem.getCostOfActions(acciones)
   longitud = len(acciones)
   expandidos = problem._expanded
+  memoria = problem._maxMemory
+  memoria_bytes = search.medirMemoriaBytes(
+    lambda: PositionSearchProblem(state, warn=False), search.uniformCostSearch)
 
   print("=" * 70)
   print(f"Actividad 2 - UCS sobre '{layout_name}'")
@@ -767,6 +698,8 @@ def demo_actividad2(layout_name="mediumMaze"):
   print(f"Costo del camino:   {costo}")
   print(f"Longitud del camino:{longitud}")
   print(f"Nodos expandidos:   {expandidos}")
+  print(f"Nodos en memoria:   {memoria}")
+  print(f"Memoria real:       {memoria_bytes} bytes")
   print(f"Tiempo:             {tiempo:.6f} s")
 
   _guardar_fila_demo({
@@ -776,6 +709,8 @@ def demo_actividad2(layout_name="mediumMaze"):
     "costo": costo,
     "longitud_camino": longitud,
     "nodos_expandidos": expandidos,
+    "nodos_en_memoria": memoria,
+    "memoria_bytes": memoria_bytes,
     "tiempo_seg": f"{tiempo:.6f}",
     "optimo": "si",
   })
@@ -837,6 +772,9 @@ def demo_actividad4(layout_name="mediumClassic"):
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(
+      lambda: PositionSearchProblem(state, warn=False), funcion)
 
     _guardar_fila_demo({
       "actividad": "4",
@@ -845,10 +783,12 @@ def demo_actividad4(layout_name="mediumClassic"):
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": "si",
     })
-    return costo, len(acciones), expandidos, tiempo
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo
 
   print("=" * 70)
   print(f"Actividad 4 - A* con h(n)=0 vs. UCS sobre '{layout_name}'")
@@ -859,9 +799,9 @@ def demo_actividad4(layout_name="mediumClassic"):
     "A* + h(n)=0": _medir("A*+h=0", lambda p: search.aStarSearch(p, search.nullHeuristic)),
   }
 
-  print(f"\n{'Algoritmo':15s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
-  for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
-    print(f"{nombre:15s} {costo:6d} {expandidos:11d} {tiempo:12.6f}")
+  print(f"\n{'Algoritmo':15s} {'Costo':>6s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, memoria, memoria_bytes, tiempo) in resultados.items():
+    print(f"{nombre:15s} {costo:6d} {expandidos:11d} {memoria:9d} {memoria_bytes:10d} {tiempo:12.6f}")
 
   costo_ucs = resultados["UCS"][0]
   exp_ucs = resultados["UCS"][2]
@@ -887,6 +827,9 @@ def demo_actividad5(layout_name="mediumClassic"):
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(
+      lambda: PositionSearchProblem(state, warn=False), funcion)
     celdas_exploradas = list(problem._visitedlist)
 
     _guardar_fila_demo({
@@ -896,10 +839,12 @@ def demo_actividad5(layout_name="mediumClassic"):
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": "si",
     })
-    return costo, len(acciones), expandidos, tiempo, celdas_exploradas
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo, celdas_exploradas
 
   print("=" * 70)
   print(f"Actividad 5 - A* con distancia Manhattan vs. UCS sobre '{layout_name}'")
@@ -910,14 +855,14 @@ def demo_actividad5(layout_name="mediumClassic"):
     "A* + Manhattan": _medir("A*+Manhattan", lambda p: search.aStarSearch(p, manhattanHeuristic)),
   }
 
-  print(f"\n{'Algoritmo':16s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
-  for nombre, (costo, longitud, expandidos, tiempo, _) in resultados.items():
-    print(f"{nombre:16s} {costo:6d} {expandidos:11d} {tiempo:12.6f}")
+  print(f"\n{'Algoritmo':16s} {'Costo':>6s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, memoria, memoria_bytes, tiempo, _) in resultados.items():
+    print(f"{nombre:16s} {costo:6d} {expandidos:11d} {memoria:9d} {memoria_bytes:10d} {tiempo:12.6f}")
 
   exp_ucs = resultados["UCS"][2]
   exp_man = resultados["A* + Manhattan"][2]
-  celdas_ucs = set(resultados["UCS"][4])
-  celdas_man = set(resultados["A* + Manhattan"][4])
+  celdas_ucs = set(resultados["UCS"][6])
+  celdas_man = set(resultados["A* + Manhattan"][6])
 
   print(f"\nReduccion de nodos expandidos: UCS={exp_ucs} -> A*+Manhattan={exp_man} "
         f"(R = {exp_ucs / exp_man:.2f}x menos expansiones)")
@@ -940,6 +885,9 @@ def demo_actividad6(layout_name="mediumClassic"):
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(
+      lambda: PositionSearchProblem(state, warn=False), lambda p: search.aStarSearch(p, heuristica))
 
     _guardar_fila_demo({
       "actividad": "6",
@@ -948,10 +896,12 @@ def demo_actividad6(layout_name="mediumClassic"):
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": "si",
     })
-    return costo, len(acciones), expandidos, tiempo
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo
 
   print("=" * 78)
   print(f"Actividad 6 - Comparacion de heuristicas (A*) sobre '{layout_name}'")
@@ -964,9 +914,9 @@ def demo_actividad6(layout_name="mediumClassic"):
   }
   resultados = {nombre: _medir(nombre, h) for nombre, h in heuristicas.items()}
 
-  print(f"\n{'Heuristica':12s} {'Longitud':>9s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
-  for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
-    print(f"{nombre:12s} {longitud:9d} {costo:6d} {expandidos:11d} {tiempo:12.6f}")
+  print(f"\n{'Heuristica':12s} {'Longitud':>9s} {'Costo':>6s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, memoria, memoria_bytes, tiempo) in resultados.items():
+    print(f"{nombre:12s} {longitud:9d} {costo:6d} {expandidos:11d} {memoria:9d} {memoria_bytes:10d} {tiempo:12.6f}")
 
   exp_null = resultados["h(n)=0"][2]
   exp_man = resultados["Manhattan"][2]
@@ -1013,6 +963,9 @@ def demo_actividad7():
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(
+      lambda: CornersProblem(state), search.uniformCostSearch)
 
     _guardar_fila_demo({
       "actividad": "7",
@@ -1021,11 +974,14 @@ def demo_actividad7():
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": "si",
     })
 
-    print(f"  UCS: costo={costo} longitud={len(acciones)} expandidos={expandidos} tiempo={tiempo:.6f}s")
+    print(f"  UCS: costo={costo} longitud={len(acciones)} expandidos={expandidos} memoria={memoria} "
+          f"memoria_bytes={memoria_bytes} tiempo={tiempo:.6f}s")
     print()
 
   _probar_conectividad_mediumCorners()
@@ -1038,10 +994,10 @@ def demo_actividad8():
   """Actividad 8."""
   layout_principal = "tinyCorners"
   costo_optimo_conocido = 22  # de la Actividad 7 (UCS sobre tinyCorners)
+  state_principal = _demo_estado(layout_principal)
 
   def _nuevo_problema():
-    state = _demo_estado(layout_principal)
-    return CornersProblem(state)
+    return CornersProblem(state_principal)
 
   def _medir(nombre, funcion_busqueda):
     problem = _nuevo_problema()
@@ -1052,6 +1008,8 @@ def demo_actividad8():
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(_nuevo_problema, funcion_busqueda)
 
     _guardar_fila_demo({
       "actividad": "8",
@@ -1060,10 +1018,12 @@ def demo_actividad8():
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": "si",
     })
-    return costo, len(acciones), expandidos, tiempo
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo
 
   problem0 = _nuevo_problema()
   inicio_estado = problem0.getStartState()
@@ -1089,9 +1049,9 @@ def demo_actividad8():
   }
   resultados = {nombre: _medir(nombre, f) for nombre, f in heuristicas.items()}
 
-  print(f"{'Heuristica':22s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
-  for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
-    print(f"{nombre:22s} {costo:6d} {longitud:9d} {expandidos:11d} {tiempo:12.6f}")
+  print(f"{'Heuristica':22s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, memoria, memoria_bytes, tiempo) in resultados.items():
+    print(f"{nombre:22s} {costo:6d} {longitud:9d} {expandidos:11d} {memoria:9d} {memoria_bytes:10d} {tiempo:12.6f}")
 
   exp0 = resultados["h(n)=0"][2]
   expB = resultados["Heuristica basica"][2]
@@ -1106,10 +1066,10 @@ def demo_actividad8():
 def demo_actividad9():
   """Actividad 9."""
   layout_principal = "tinyCorners"
+  state_principal = _demo_estado(layout_principal)
 
   def _nuevo_problema():
-    state = _demo_estado(layout_principal)
-    return CornersProblem(state)
+    return CornersProblem(state_principal)
 
   def _medir(metodo, funcion_busqueda, costo_optimo_referencia):
     problem = _nuevo_problema()
@@ -1120,6 +1080,8 @@ def demo_actividad9():
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(_nuevo_problema, funcion_busqueda)
     optimo = "si" if costo == costo_optimo_referencia else "no"
 
     _guardar_fila_demo({
@@ -1129,10 +1091,12 @@ def demo_actividad9():
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": optimo,
     })
-    return costo, len(acciones), expandidos, tiempo, optimo
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo, optimo
 
   print("=" * 88)
   print(f"Actividad 9 - Experimento comparativo sobre '{layout_principal}'")
@@ -1145,9 +1109,12 @@ def demo_actividad9():
   costo_ucs = problem_ucs.getCostOfActions(acciones_ucs)
   long_ucs = len(acciones_ucs)
   exp_ucs = problem_ucs._expanded
+  mem_ucs = problem_ucs._maxMemory
+  mem_bytes_ucs = search.medirMemoriaBytes(_nuevo_problema, search.uniformCostSearch)
   _guardar_fila_demo({
     "actividad": "9", "metodo_heuristica": "UCS", "layout": layout_principal,
     "costo": costo_ucs, "longitud_camino": long_ucs, "nodos_expandidos": exp_ucs,
+    "nodos_en_memoria": mem_ucs, "memoria_bytes": mem_bytes_ucs,
     "tiempo_seg": f"{t_ucs:.6f}", "optimo": "si",
   })
 
@@ -1157,13 +1124,13 @@ def demo_actividad9():
     "A* + heuristica propuesta": lambda p: search.aStarSearch(p, cornersHeuristic),
   }
 
-  filas = {"UCS": (costo_ucs, long_ucs, exp_ucs, t_ucs, "si")}
+  filas = {"UCS": (costo_ucs, long_ucs, exp_ucs, mem_ucs, mem_bytes_ucs, t_ucs, "si")}
   for nombre, f in metodos.items():
     filas[nombre] = _medir(nombre, f, costo_optimo_referencia=costo_ucs)
 
-  print(f"{'Metodo':26s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s} {'Optimo':>7s}")
-  for nombre, (costo, longitud, expandidos, tiempo, optimo) in filas.items():
-    print(f"{nombre:26s} {costo:6d} {expandidos:11d} {tiempo:12.6f} {optimo:>7s}")
+  print(f"{'Metodo':26s} {'Costo':>6s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s} {'Optimo':>7s}")
+  for nombre, (costo, longitud, expandidos, memoria, memoria_bytes, tiempo, optimo) in filas.items():
+    print(f"{nombre:26s} {costo:6d} {expandidos:11d} {memoria:9d} {memoria_bytes:10d} {tiempo:12.6f} {optimo:>7s}")
 
   n_ucs = filas["UCS"][2]
   n_astar_propuesta = filas["A* + heuristica propuesta"][2]
@@ -1190,6 +1157,8 @@ def demo_actividad10():
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(lambda: FoodSearchProblem(state), funcion_busqueda)
     numFoodInicial = state.getFood().count()
 
     _guardar_fila_demo({
@@ -1199,25 +1168,27 @@ def demo_actividad10():
       "costo": costo,
       "longitud_camino": len(acciones),
       "nodos_expandidos": expandidos,
+      "nodos_en_memoria": memoria,
+      "memoria_bytes": memoria_bytes,
       "tiempo_seg": f"{tiempo:.6f}",
       "optimo": "si",
     })
-    return costo, len(acciones), expandidos, tiempo, numFoodInicial
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo, numFoodInicial
 
   def _explorar(layout_name):
     print("=" * 78)
     print(f"Actividad 10 - FoodSearchProblem sobre '{layout_name}'")
     print("=" * 78)
 
-    costo_u, long_u, exp_u, t_u, nfood = _medir(layout_name, "UCS", search.uniformCostSearch)
-    costo_a, long_a, exp_a, t_a, _ = _medir(
+    costo_u, long_u, exp_u, mem_u, membytes_u, t_u, nfood = _medir(layout_name, "UCS", search.uniformCostSearch)
+    costo_a, long_a, exp_a, mem_a, membytes_a, t_a, _ = _medir(
       layout_name, "A*+h(n)=0", lambda p: search.aStarSearch(p, search.nullHeuristic)
     )
 
     print(f"Alimentos iniciales en el layout: {nfood}")
-    print(f"{'Metodo':12s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
-    print(f"{'UCS':12s} {costo_u:6d} {long_u:9d} {exp_u:11d} {t_u:12.6f}")
-    print(f"{'A*+h(n)=0':12s} {costo_a:6d} {long_a:9d} {exp_a:11d} {t_a:12.6f}")
+    print(f"{'Metodo':12s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s}")
+    print(f"{'UCS':12s} {costo_u:6d} {long_u:9d} {exp_u:11d} {mem_u:9d} {membytes_u:10d} {t_u:12.6f}")
+    print(f"{'A*+h(n)=0':12s} {costo_a:6d} {long_a:9d} {exp_a:11d} {mem_a:9d} {membytes_a:10d} {t_a:12.6f}")
     print("Verificado: mismo costo optimo y mismos nodos expandidos (igual que en la Actividad 4).")
     print()
 
@@ -1250,6 +1221,8 @@ def demo_actividad11():
 
     costo = problem.getCostOfActions(acciones)
     expandidos = problem._expanded
+    memoria = problem._maxMemory
+    memoria_bytes = search.medirMemoriaBytes(lambda: FoodSearchProblem(state), funcion_busqueda)
 
     if guardar:
       _guardar_fila_demo({
@@ -1259,10 +1232,12 @@ def demo_actividad11():
         "costo": costo,
         "longitud_camino": len(acciones),
         "nodos_expandidos": expandidos,
+        "nodos_en_memoria": memoria,
+        "memoria_bytes": memoria_bytes,
         "tiempo_seg": f"{tiempo:.6f}",
         "optimo": "si",
       })
-    return costo, len(acciones), expandidos, tiempo
+    return costo, len(acciones), expandidos, memoria, memoria_bytes, tiempo
 
   def _comparar_heuristicas(layout_name):
     print("=" * 78)
@@ -1276,9 +1251,9 @@ def demo_actividad11():
     }
     resultados = {nombre: _medir(layout_name, nombre, f) for nombre, f in heuristicas.items()}
 
-    print(f"{'Heuristica':14s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
-    for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
-      print(f"{nombre:14s} {costo:6d} {longitud:9d} {expandidos:11d} {tiempo:12.6f}")
+    print(f"{'Heuristica':14s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Memoria':>9s} {'Bytes':>10s} {'Tiempo (s)':>12s}")
+    for nombre, (costo, longitud, expandidos, memoria, memoria_bytes, tiempo) in resultados.items():
+      print(f"{nombre:14s} {costo:6d} {longitud:9d} {expandidos:11d} {memoria:9d} {memoria_bytes:10d} {tiempo:12.6f}")
 
     exp0 = resultados["h(n)=0"][2]
     exp1 = resultados["Heuristica 1"][2]
@@ -1295,10 +1270,10 @@ def demo_actividad11():
 
     tiempos_con, tiempos_sin = [], []
     for _ in range(repeticiones_cache):
-      _, _, exp_con, t_con = _medir(
+      _, _, exp_con, mem_con, membytes_con, t_con = _medir(
         layout_name, "H2_con_cache", lambda p: search.aStarSearch(p, foodHeuristic), guardar=False
       )
-      _, _, exp_sin, t_sin = _medir(
+      _, _, exp_sin, mem_sin, membytes_sin, t_sin = _medir(
         layout_name, "H2_sin_cache", lambda p: search.aStarSearch(p, foodHeuristicV2SinCache), guardar=False
       )
       tiempos_con.append(t_con)
@@ -1310,11 +1285,13 @@ def demo_actividad11():
     _guardar_fila_demo({
       "actividad": "11", "metodo_heuristica": "H2_con_cache", "layout": layout_name,
       "costo": "-", "longitud_camino": "-", "nodos_expandidos": exp_con,
+      "nodos_en_memoria": mem_con, "memoria_bytes": membytes_con,
       "tiempo_seg": f"{prom_con:.6f}", "optimo": "si",
     })
     _guardar_fila_demo({
       "actividad": "11", "metodo_heuristica": "H2_sin_cache", "layout": layout_name,
       "costo": "-", "longitud_camino": "-", "nodos_expandidos": exp_sin,
+      "nodos_en_memoria": mem_sin, "memoria_bytes": membytes_sin,
       "tiempo_seg": f"{prom_sin:.6f}", "optimo": "si",
     })
 
@@ -1335,6 +1312,74 @@ def demo_actividad11():
   print("Filas guardadas en resultados.csv (actividad=11).")
 
 
+def demo_resultados_generales(repeticiones=10):
+  "Fila por experimento de la tabla de resultados generales, promediando tiempo y memoria en bytes sobre `repeticiones` corridas."
+  layout_medium = _demo_estado("mediumClassic")
+  layout_corners = _demo_estado("tinyCorners")
+  layout_food = _demo_estado("testClassic")
+
+  experimentos = [
+    ("UCS", lambda: PositionSearchProblem(layout_medium, warn=False),
+     search.uniformCostSearch),
+    ("A* + heuristica nula", lambda: PositionSearchProblem(layout_medium, warn=False),
+     lambda p: search.aStarSearch(p, search.nullHeuristic)),
+    ("A* + Manhattan", lambda: PositionSearchProblem(layout_medium, warn=False),
+     lambda p: search.aStarSearch(p, manhattanHeuristic)),
+    ("A* + Euclidiana", lambda: PositionSearchProblem(layout_medium, warn=False),
+     lambda p: search.aStarSearch(p, euclideanHeuristic)),
+    ("A* + Corners Heuristic", lambda: CornersProblem(layout_corners),
+     lambda p: search.aStarSearch(p, cornersHeuristic)),
+    ("A* + Food Heuristic", lambda: FoodSearchProblem(layout_food),
+     lambda p: search.aStarSearch(p, foodHeuristic)),
+  ]
+
+  print("=" * 90)
+  print(f"Resultados generales - promedio de tiempo sobre {repeticiones} corridas")
+  print("=" * 90)
+
+  filas = []
+  for nombre, fabrica_problema, funcion_busqueda in experimentos:
+    tiempos = []
+    for _ in range(repeticiones):
+      problem = fabrica_problema()
+      inicio = time.perf_counter()
+      acciones = funcion_busqueda(problem)
+      tiempos.append(time.perf_counter() - inicio)
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+    memoria_nodos = problem._maxMemory
+
+    bytes_medidos = [
+      search.medirMemoriaBytes(fabrica_problema, funcion_busqueda)
+      for _ in range(repeticiones)
+    ]
+
+    tiempo_prom = sum(tiempos) / len(tiempos)
+    tiempo_min = min(tiempos)
+    tiempo_max = max(tiempos)
+
+    memoria_bytes_prom = sum(bytes_medidos) / len(bytes_medidos)
+
+    filas.append((nombre, costo, expandidos, memoria_nodos, memoria_bytes_prom, tiempo_prom))
+
+    print(f"\n{nombre}")
+    print(f"  Costo={costo}  Expandidos={expandidos}  Memoria(nodos)={memoria_nodos}")
+    print(f"  Memoria real promedio ({repeticiones} corridas): {memoria_bytes_prom:,.0f} bytes "
+          f"(min={min(bytes_medidos):,}, max={max(bytes_medidos):,})")
+    print(f"  Tiempo promedio ({repeticiones} corridas): {tiempo_prom:.6f}s "
+          f"(min={tiempo_min:.6f}s, max={tiempo_max:.6f}s)")
+
+  print("\n" + "=" * 90)
+  print("Filas listas para pegar en docs/latex/secciones/resultados_generales.tex:")
+  print("=" * 90)
+  for nombre, costo, expandidos, memoria_nodos, memoria_bytes_prom, tiempo_prom in filas:
+    print(f"{nombre:26s} & {costo} & {expandidos} & {memoria_nodos} & "
+          f"{memoria_bytes_prom:,.0f} & {tiempo_prom:.6f} \\\\")
+
+  return filas
+
+
 if __name__ == "__main__":
   import sys
 
@@ -1350,16 +1395,17 @@ if __name__ == "__main__":
     9: demo_actividad9,
     10: demo_actividad10,
     11: demo_actividad11,
+    "generales": demo_resultados_generales,
   }
 
   if len(sys.argv) > 1:
-    _numeros = [int(a) for a in sys.argv[1:]]
+    _numeros = [a if a == "generales" else int(a) for a in sys.argv[1:]]
   else:
     _numeros = list(range(1, 12))
 
   for _n in _numeros:
     if _n not in _DEMOS:
-      print(f"Actividad {_n} no existe (usar un numero entero de 1 a 11).")
+      print(f"Actividad {_n} no existe (usar un numero entero de 1 a 11, o 'generales').")
       continue
     _DEMOS[_n]()
     print()

@@ -1,5 +1,5 @@
 """
-In search.py, you will implement generic search algorithms which are called 
+In search.py, you will implement generic search algorithms which are called
 by Pacman agents (in searchAgents.py).
 """
 
@@ -9,20 +9,20 @@ class SearchProblem:
   """
   This class outlines the structure of a search problem, but doesn't implement
   any of the methods (in object-oriented terminology: an abstract class).
-  
+
   You do not need to change anything in this class, ever.
   """
-  
+
   def getStartState(self):
      """
-     Returns the start state for the search problem 
+     Returns the start state for the search problem
      """
      util.raiseNotDefined()
-    
+
   def isGoalState(self, state):
      """
        state: Search state
-    
+
      Returns True if and only if the state is a valid goal state
      """
      util.raiseNotDefined()
@@ -30,11 +30,11 @@ class SearchProblem:
   def getSuccessors(self, state):
      """
        state: Search state
-     
-     For a given state, this should return a list of triples, 
-     (successor, action, stepCost), where 'successor' is a 
+
+     For a given state, this should return a list of triples,
+     (successor, action, stepCost), where 'successor' is a
      successor to the current state, 'action' is the action
-     required to get there, and 'stepCost' is the incremental 
+     required to get there, and 'stepCost' is the incremental
      cost of expanding to that successor
      """
      util.raiseNotDefined()
@@ -42,12 +42,12 @@ class SearchProblem:
   def getCostOfActions(self, actions):
      """
       actions: A list of actions to take
- 
+
      This method returns the total cost of a particular sequence of actions.  The sequence must
      be composed of legal moves
      """
      util.raiseNotDefined()
-           
+
 
 def tinyMazeSearch(problem):
   """
@@ -62,13 +62,13 @@ def tinyMazeSearch(problem):
 def depthFirstSearch(problem):
   """
   Search the deepest nodes in the search tree first [p 85].
-  
+
   Your search algorithm needs to return a list of actions that reaches
   the goal.  Make sure to implement a graph search algorithm [Fig. 3.7].
-  
+
   To get started, you might want to try some of these simple commands to
   understand the search problem that is being passed in:
-  
+
   print "Start:", problem.getStartState()
   print "Is the start a goal?", problem.isGoalState(problem.getStartState())
   print "Start's successors:", problem.getSuccessors(problem.getStartState())
@@ -76,47 +76,41 @@ def depthFirstSearch(problem):
 
 def breadthFirstSearch(problem):
   "Search the shallowest nodes in the search tree first. [p 81]"
-      
+
 def uniformCostSearch(problem):
   """
   Search the node of least total cost first.
 
-  Actividad 2. Busqueda en grafo: frontera ordenada por g(n) (costo
-  acumulado), con un diccionario bestCost para no reexpandir un estado si
-  ya se conoce un camino mas barato. El contador en cada tupla evita que
-  heapq falle al comparar estados no comparables (ver Actividad 11).
+  Busqueda en grafo con frontera ordenada por g(n) y bestCost como lista
+  cerrada. problem._maxMemory guarda el pico de len(frontier)+len(bestCost).
   """
   frontier = util.PriorityQueue()
 
   startState = problem.getStartState()
   contador = 0
-  # Cada elemento de la frontera es (contador, estado, acciones, g(n)).
   frontier.push((contador, startState, [], 0), 0)
 
-  # Mejor costo g(n) conocido hasta ahora para cada estado.
   bestCost = {startState: 0}
+  problem._maxMemory = len(frontier.heap) + len(bestCost)
 
   while not frontier.isEmpty():
     _, state, actions, cost = frontier.pop()
 
-    # Si ya existe un camino mas barato registrado para este estado,
-    # esta es una entrada obsoleta de la cola: se descarta sin expandir.
     if cost > bestCost.get(state, float('inf')):
       continue
 
-    # Prueba de objetivo ANTES de expandir (evita expandir de mas).
     if problem.isGoalState(state):
       return actions
 
     for successor, action, stepCost in problem.getSuccessors(state):
       newCost = cost + stepCost
-      # Solo nos interesa este sucesor si mejora el mejor costo conocido.
       if newCost < bestCost.get(successor, float('inf')):
         bestCost[successor] = newCost
         contador += 1
         frontier.push((contador, successor, actions + [action], newCost), newCost)
 
-  # Frontera vacia sin encontrar meta: no existe solucion.
+    problem._maxMemory = max(problem._maxMemory, len(frontier.heap) + len(bestCost))
+
   return []
 
 def nullHeuristic(state, problem=None):
@@ -130,33 +124,24 @@ def aStarSearch(problem, heuristic=nullHeuristic):
   """
   Search the node that has the lowest combined cost and heuristic first.
 
-  Actividad 3. Mismo esqueleto que uniformCostSearch, con una sola
-  diferencia: la prioridad de la frontera es f(n) = g(n) + h(n) en vez de
-  solo g(n). Con heuristic=nullHeuristic se comporta igual que UCS
-  (Actividad 4); con una heuristica admisible y consistente sigue siendo
-  optimo, pero expande menos nodos.
+  Igual que uniformCostSearch, con f(n) = g(n) + h(n) como prioridad.
   """
   frontier = util.PriorityQueue()
 
   startState = problem.getStartState()
   contador = 0
-  startPriority = 0 + heuristic(startState, problem)  # f = g + h, g = 0
+  startPriority = 0 + heuristic(startState, problem)
   frontier.push((contador, startState, [], 0), startPriority)
 
-  # Mejor costo g(n) conocido hasta ahora para cada estado (igual que UCS;
-  # la heuristica NO se guarda aqui porque no hace falta: se recalcula al
-  # generar cada sucesor).
   bestCost = {startState: 0}
+  problem._maxMemory = len(frontier.heap) + len(bestCost)
 
   while not frontier.isEmpty():
     _, state, actions, cost = frontier.pop()
 
-    # Entrada obsoleta de la cola (ya se encontro un g(n) mejor): se
-    # descarta sin expandir, igual que en UCS.
     if cost > bestCost.get(state, float('inf')):
       continue
 
-    # Prueba de objetivo ANTES de expandir.
     if problem.isGoalState(state):
       return actions
 
@@ -165,11 +150,26 @@ def aStarSearch(problem, heuristic=nullHeuristic):
       if newCost < bestCost.get(successor, float('inf')):
         bestCost[successor] = newCost
         contador += 1
-        priority = newCost + heuristic(successor, problem)  # f(n) = g(n) + h(n)
+        priority = newCost + heuristic(successor, problem)
         frontier.push((contador, successor, actions + [action], newCost), priority)
 
-  # Frontera vacia sin encontrar meta: no existe solucion.
+    problem._maxMemory = max(problem._maxMemory, len(frontier.heap) + len(bestCost))
+
   return []
+
+def medirMemoriaBytes(fabricaProblema, funcionBusqueda):
+  """
+  Pico real de bytes (tracemalloc) al correr funcionBusqueda sobre un
+  problema nuevo. Corrida aparte para no distorsionar el tiempo medido
+  en uniformCostSearch/aStarSearch.
+  """
+  import tracemalloc
+  tracemalloc.start()
+  problem = fabricaProblema()
+  funcionBusqueda(problem)
+  _, picoBytes = tracemalloc.get_traced_memory()
+  tracemalloc.stop()
+  return picoBytes
 
 # Abbreviations
 bfs = breadthFirstSearch
