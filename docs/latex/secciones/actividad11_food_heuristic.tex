@@ -11,16 +11,51 @@ alimento restante más lejano.
 \label{fig:act11-h1}
 \end{figure}
 
-\textbf{Admisibilidad:} el costo real para recoger toda la comida restante es, como mínimo, el
-costo de llegar hasta el alimento más lejano --en algún momento del recorrido Pac-Man tiene que
-llegar hasta él--, y la distancia Manhattan nunca sobreestima una distancia real en una cuadrícula
-con paredes. Por lo tanto $h(n) \le h^*(n)$ siempre.
+\paragraph{Admisibilidad.} Para recoger toda la comida, en algún momento del recorrido Pac-Man
+tiene que llegar hasta el alimento más lejano $f^*$; eso ya cuesta, como mínimo, $d_M(n,f^*)$
+pasos. Como la distancia Manhattan nunca sobreestima una distancia real con paredes (cada paso
+real cambia $x$ o $y$ en 1 unidad; Manhattan es el mínimo número de esos pasos sin contar paredes),
+$$h(n) = d_M(n,f^*) \le h^*(n).$$
+\textbf{Conclusión: la Heurística 1 es admisible.}
 
-\textbf{Consistencia:} para cualquier sucesor $n'$ de $n$ (un paso ortogonal, costo 1), si el
-alimento más lejano de $n$ sigue presente en $n'$ (no fue el que se acaba de comer), la desigualdad
-triangular de Manhattan da $d_M(n,f^*) \le d_M(n,n') + d_M(n',f^*) = 1 + d_M(n',f^*) \le 1 + h(n')$.
-Si el alimento más lejano de $n$ era justo el que estaba en $n'$ (se acaba de comer),
-$d_M(n,n') = 1 \le 1 + h(n')$ porque $h(n') \ge 0$ siempre. En ambos casos $h(n) \le 1 + h(n')$.
+\paragraph{Consistencia.} Sea $f^*$ el alimento que define $h(n) = d_M(n,f^*)$ (el más lejano desde
+$n$). El mismo diagrama de triángulo usado en la Actividad 8 aplica aquí, cambiando la esquina
+pendiente por el alimento $f^*$:
+
+\begin{center}
+\begin{tikzpicture}[scale=1.15, every node/.style={font=\small}]
+  \coordinate (n) at (0,0);
+  \coordinate (np) at (3.2,0);
+  \coordinate (p) at (1.6,2.4);
+
+  \draw[very thick] (n) -- (np);
+  \draw[very thick, dashed, teal!70!black] (n) -- (p);
+  \draw[very thick, dashed, orange!80!black] (np) -- (p);
+
+  \node[below=10pt] at (1.6,0) {1 paso};
+  \node[left, teal!70!black] at (0.45,1.3) {$d_M(n,f^*) = h(n)$};
+  \node[right, orange!80!black] at (2.8,1.3) {$d_M(n',f^*) = h(n')$};
+
+  \filldraw (n) circle (2.2pt) node[left=4pt] {$n$};
+  \filldraw (np) circle (2.2pt) node[right=4pt] {$n'$};
+  \filldraw[red] (p) circle (2.2pt) node[above] {$f^*$ (alimento más lejano)};
+\end{tikzpicture}
+\end{center}
+
+Al dar un paso de $n$ a $n'$ (costo 1) hay dos casos posibles:
+
+\begin{enumerate}[label=\textbf{Caso \arabic*:}, leftmargin=2.2cm]
+  \item \textbf{$f^*$ sigue presente en $n'$} (no fue el alimento que se acaba de comer). La
+  desigualdad triangular del dibujo da
+  $$h(n) = d_M(n,f^*) \le \underbrace{d_M(n,n')}_{=\,1} + d_M(n',f^*) = 1 + h(n').$$
+  \item \textbf{$f^*$ era justo el alimento que se comió al pasar de $n$ a $n'$}, es decir
+  $f^* = n'$. Entonces $n$ y $n'$ son vecinos directos:
+  $$h(n) = d_M(n,f^*) = d_M(n,n') = 1 \le 1 + h(n')$$
+  (válido porque $h(n') \ge 0$ siempre).
+\end{enumerate}
+
+En ambos casos $h(n) \le 1 + h(n') = c(n,n') + h(n')$; y en la meta no queda comida, así que
+$h(\text{meta}) = 0$. \textbf{Conclusión: la Heurística 1 también es consistente.}
 
 \subsection{Heurística 2: diámetro Manhattan de posición + comida restante}
 
@@ -51,21 +86,40 @@ momento del camino --no solo la distancia desde su posición actual hasta el má
 \label{fig:act11-h2-p2}
 \end{figure}
 
-\textbf{Admisibilidad:} el recorrido que visita, en cualquier orden, la posición $n$ y todos los
+\paragraph{Admisibilidad.} El recorrido que visita, en cualquier orden, la posición $n$ y todos los
 alimentos de $F$ tiene una longitud real que es, como mínimo, la distancia real entre el par de
-puntos (de $\{n\} \cup F$) más separado entre sí --en algún momento del recorrido Pac-Man pasa por
-ambos puntos de ese par--. Como la distancia Manhattan nunca sobreestima la distancia real, el
-diámetro en Manhattan de $\{n\} \cup F$ es una cota inferior válida: $h(n) \le h^*(n)$.
+puntos de $\{n\} \cup F$ más separado entre sí (en algún momento Pac-Man pasa por ambos puntos de
+ese par). Como la distancia Manhattan nunca sobreestima la distancia real, ese diámetro es una cota
+inferior válida:
+$$h(n) = \operatorname{diam}(\{n\} \cup F) \le h^*(n).$$
+\textbf{Conclusión: la Heurística 2 es admisible.}
 
-\textbf{Consistencia:} el mismo argumento de desigualdad triangular de la Heurística 1 se aplica
-aquí a cualquier par de puntos de $\{n, n'\} \cup F$. El caso más delicado es cuando se acaba de
-comer el alimento en $n'$ (es decir, $F' = F \setminus \{n'\}$ tras el paso): como
-$\{n\} \cup F = \{n, n'\} \cup F'$, para cualquier par que incluya a $n$ y a algún
-$q \in \{n'\} \cup F'$ se cumple $d_M(n,q) \le d_M(n,n') + d_M(n',q) = 1 + d_M(n',q) \le 1 + h(n')$
-(porque $q \in \{n'\} \cup F'$ acota por el máximo); si el par no incluye a $n$, ya está dentro de
-$\{n'\} \cup F'$ y su distancia es, por definición, $\le h(n')$. Por lo tanto $h(n) \le 1 + h(n')$
-en todos los casos, y $h(\text{meta}) = 0$ porque con $F=\emptyset$ el conjunto $\{n\}$ es un único
-punto (diámetro 0).
+\paragraph{Consistencia.} Aquí $h(n)$ no es la distancia a un solo punto, sino el \textbf{diámetro}
+de $\{n\}\cup F$: la distancia entre el par $(a,b)$ más separado de ese conjunto. Al dar un paso de
+$n$ a $n'$, la comida restante pasa de $F$ a $F'$ (igual a $F$, o a $F \setminus \{n'\}$ si Pac-Man
+comió al llegar a $n'$). El razonamiento se resuelve mirando quién forma el par $(a,b)$:
+
+\begin{enumerate}[label=\textbf{Caso \arabic*:}, leftmargin=2.6cm]
+  \item \textbf{Ninguno de los dos puntos del par es $n$} (ambos son alimentos, $a,b \in F$). Todo
+  alimento de $F$ sigue estando en $\{n'\} \cup F'$ --si alguno de los dos era justo el que se
+  comió, ese punto ahora es $n'$ mismo--, así que la misma distancia \emph{ya cuenta} para
+  $h(n')$:
+  $$h(n) = d_M(a,b) \le h(n'),$$
+  sin siquiera necesitar el $+1$ del paso.
+  \item \textbf{Uno de los dos puntos del par es $n$}, es decir $h(n) = d_M(n,a)$ para el alimento
+  $a$ más lejano (el mismo caso que la Heurística 1, solo que aquí $a$ compite además contra las
+  distancias \emph{entre pares} de alimentos por ser el máximo). Se repiten los mismos dos
+  sub-casos de la Figura anterior:
+  \begin{itemize}
+    \item Si $a$ sigue presente en $F'$: $d_M(n,a) \le d_M(n,n') + d_M(n',a) = 1 + d_M(n',a) \le 1 + h(n')$.
+    \item Si $a$ era justo el alimento recién comido ($a = n'$): $d_M(n,a) = d_M(n,n') = 1 \le 1 + h(n')$.
+  \end{itemize}
+\end{enumerate}
+
+En todos los casos $h(n) \le 1 + h(n') = c(n,n') + h(n')$; y en la meta no queda comida, el
+conjunto se reduce a un único punto (la posición final), cuyo diámetro es $h(\text{meta}) = 0$.
+\textbf{Conclusión: la Heurística 2 también es consistente} --el mismo argumento de la
+Heurística 1, aplicado a un conjunto de puntos en vez de a uno solo--.
 
 \subsection{Optimización con \texttt{problem.heuristicInfo}: qué se cachea y por qué}
 
