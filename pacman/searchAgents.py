@@ -620,3 +620,749 @@ def mazeDistance(point1, point2, gameState):
   assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
   prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False)
   return len(search.bfs(prob))
+
+
+##############################################################################
+# Demos autonomos (actividades 1-11), para que el entregable final          #
+# (search.py + searchAgents.py + resultados.csv + informe.pdf) pueda        #
+# reproducir por si solo, sobre el proyecto base del profesor, todos los    #
+# datos que hoy generan los scripts de experimentos/ -- sin depender de esa #
+# carpeta (que NO viaja dentro del zip de entrega). Replican exactamente    #
+# los mismos layouts, algoritmos/heuristicas y prints de cada script        #
+# experimentos/actividadN_*.py; solo se reimplementa aqui, sin importar     #
+# nada de experimentos/, el guardado de filas en un resultados.csv propio.  #
+##############################################################################
+
+def _guardar_fila_demo(fila):
+  """
+  Inserta o reemplaza una fila en un resultados.csv del directorio de
+  trabajo actual (NO resultados/resultados.csv: esa subcarpeta no existe
+  cuando esto se corre solo con los 4 archivos del zip de entrega puestos
+  sobre el proyecto base del profesor). Mismas columnas y misma regla de
+  deduplicacion -- por (actividad, metodo_heuristica, layout) -- que
+  experimentos/_resultados.py, reimplementadas aqui para no depender de
+  esa carpeta.
+  """
+  import csv
+  import os
+
+  columnas = [
+    "actividad",
+    "metodo_heuristica",
+    "layout",
+    "costo",
+    "longitud_camino",
+    "nodos_expandidos",
+    "tiempo_seg",
+    "optimo",
+  ]
+  ruta = "resultados.csv"
+
+  filas = []
+  if os.path.exists(ruta):
+    with open(ruta, newline="", encoding="utf-8") as f:
+      filas = list(csv.DictReader(f))
+
+  clave = (fila["actividad"], fila["metodo_heuristica"], fila["layout"])
+  filas = [
+    f for f in filas
+    if (f.get("actividad"), f.get("metodo_heuristica"), f.get("layout")) != clave
+  ]
+  filas.append(fila)
+  filas.sort(key=lambda f: (f.get("actividad", ""), f.get("metodo_heuristica", "")))
+
+  with open(ruta, "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=columnas)
+    writer.writeheader()
+    writer.writerows(filas)
+
+
+def _demo_estado(layout_name):
+  """
+  Construye el GameState inicial para un layout (numGhostAgents=0, igual
+  que todos los scripts de experimentos/). Import local de layout y pacman
+  (no al inicio del archivo): pacman.py ya hace 'import searchAgents' a
+  nivel de modulo, asi que un 'import pacman' de searchAgents.py a nivel de
+  modulo formaria un ciclo; como import local, para cuando esta funcion se
+  ejecuta pacman.py ya termino de cargar, asi que no hay riesgo.
+  """
+  import layout as layout_module
+  import pacman
+
+  lay = layout_module.getLayout(layout_name)
+  if lay is None:
+    raise SystemExit(f"No se encontro el layout '{layout_name}' en pacman/layouts/")
+  state = pacman.GameState()
+  state.initialize(lay, numGhostAgents=0)
+  return state
+
+
+def demo_actividad1():
+  """Replica experimentos/actividad1_exploracion.py. No genera fila (esta
+  actividad solo explora componentes, no mide nada)."""
+  import layout as layout_module
+
+  layout_name = "tinyMaze"
+  lay = layout_module.getLayout(layout_name)
+  state = _demo_estado(layout_name)
+  problem = PositionSearchProblem(state)
+
+  print("=" * 70)
+  print(f"Actividad 1 - Componentes del problema de busqueda ({layout_name})")
+  print("=" * 70)
+
+  s0 = problem.getStartState()
+  print(f"\n[S]  Estado (s):        posicion (x, y) de Pac-Man en el laberinto")
+  print(f"[s0] Estado inicial:    {s0}")
+
+  print(f"\n[A]  Acciones disponibles en s0:")
+  sucesores = problem.getSuccessors(s0)
+  for successor, action, stepCost in sucesores:
+    print(f"     accion={action:6s} -> sucesor={successor}  costo_paso={stepCost}")
+  if not sucesores:
+    print("     (sin sucesores: revisar layout)")
+
+  print(f"\n[T]  Funcion de transicion / sucesor: getSuccessors(state) -> "
+        f"{len(sucesores)} sucesores desde s0 en este layout")
+
+  print(f"\n[G]  Prueba de objetivo isGoalState(s0) = {problem.isGoalState(s0)}")
+  print(f"     Objetivo configurado en este problema: problem.goal = {problem.goal}")
+
+  print(f"\n[C]  Costo: cada movimiento legal cuesta 1 "
+        f"(ver PositionSearchProblem.costFn, por defecto lambda x: 1)")
+
+  print(f"\nDimensiones del laberinto: {lay.width} x {lay.height}"
+        f"  |  Paredes totales: {lay.walls.count()}"
+        f"  |  Alimentos totales: {lay.food.count()}")
+
+  print("\nResumen para la tabla de la guia:")
+  tabla = [
+    ("Estado", "Posicion (x, y) de Pac-Man dentro del laberinto."),
+    ("Estado inicial", f"{s0} (posicion de partida en '{layout_name}')."),
+    ("Acciones", "North, South, East, West; solo si no hay pared en esa direccion."),
+    ("Funcion sucesor", "getSuccessors(state): devuelve (sucesor, accion, costo) por cada movimiento legal."),
+    ("Objetivo", f"isGoalState(state); en PositionSearchProblem, llegar a {problem.goal}."),
+    ("Costo", "1 por movimiento (suma de pasos = longitud del camino)."),
+  ]
+  for elemento, descripcion in tabla:
+    print(f"  - {elemento}: {descripcion}")
+
+
+def demo_actividad2(layout_name="mediumMaze"):
+  """Replica experimentos/actividad2_ucs.py."""
+  state = _demo_estado(layout_name)
+  problem = PositionSearchProblem(state, warn=False)
+
+  inicio = time.perf_counter()
+  acciones = search.uniformCostSearch(problem)
+  tiempo = time.perf_counter() - inicio
+
+  costo = problem.getCostOfActions(acciones)
+  longitud = len(acciones)
+  expandidos = problem._expanded
+
+  print("=" * 70)
+  print(f"Actividad 2 - UCS sobre '{layout_name}'")
+  print("=" * 70)
+  print(f"Estado inicial:     {problem.getStartState()}")
+  print(f"Objetivo:           {problem.goal}")
+  print(f"Costo del camino:   {costo}")
+  print(f"Longitud del camino:{longitud}")
+  print(f"Nodos expandidos:   {expandidos}")
+  print(f"Tiempo:             {tiempo:.6f} s")
+
+  _guardar_fila_demo({
+    "actividad": "2",
+    "metodo_heuristica": "UCS",
+    "layout": layout_name,
+    "costo": costo,
+    "longitud_camino": longitud,
+    "nodos_expandidos": expandidos,
+    "tiempo_seg": f"{tiempo:.6f}",
+    "optimo": "si",
+  })
+  print(f"\nFila guardada en resultados.csv (actividad=2, metodo=UCS, layout={layout_name}).")
+
+
+def demo_actividad3():
+  """Replica experimentos/actividad3_astar_verificacion.py (solo verifica,
+  no genera fila)."""
+  layouts = ["tinyMaze", "mediumMaze", "mediumClassic", "openClassic", "trickyClassic"]
+
+  def _correr(layout_name, funcion, heuristica=None):
+    state = _demo_estado(layout_name)
+    problem = PositionSearchProblem(state, warn=False)
+    acciones = funcion(problem, heuristica) if heuristica is not None else funcion(problem)
+    return problem.getCostOfActions(acciones), problem._expanded
+
+  print("=" * 88)
+  print("Actividad 3 - Verificacion de aStarSearch contra la linea base de UCS")
+  print("=" * 88)
+  fallas = []
+  for layout_name in layouts:
+    costo_ucs, exp_ucs = _correr(layout_name, search.uniformCostSearch)
+    costo_h0, exp_h0 = _correr(layout_name, search.aStarSearch, search.nullHeuristic)
+    costo_man, exp_man = _correr(layout_name, search.aStarSearch, manhattanHeuristic)
+    costo_euc, exp_euc = _correr(layout_name, search.aStarSearch, euclideanHeuristic)
+
+    print(f"\n{layout_name}:")
+    print(f"  UCS             costo={costo_ucs:4d}  expandidos={exp_ucs:4d}")
+    print(f"  A* + h=0        costo={costo_h0:4d}  expandidos={exp_h0:4d}")
+    print(f"  A* + Manhattan  costo={costo_man:4d}  expandidos={exp_man:4d}")
+    print(f"  A* + Euclidiana costo={costo_euc:4d}  expandidos={exp_euc:4d}")
+
+    if not (costo_ucs == costo_h0 == costo_man == costo_euc):
+      fallas.append(f"{layout_name}: los costos deberian coincidir (todas optimas)")
+    if exp_ucs != exp_h0:
+      fallas.append(f"{layout_name}: A*+h=0 deberia expandir igual que UCS")
+    if exp_man > exp_h0 or exp_euc > exp_h0:
+      fallas.append(f"{layout_name}: una heuristica admisible no deberia expandir mas que h=0")
+
+  print("\n" + "=" * 88)
+  if fallas:
+    print("FALLAS DETECTADAS:")
+    for f in fallas:
+      print(f"  - {f}")
+  else:
+    print("Todas las verificaciones pasaron: A* es correcto y consistente con UCS.")
+
+
+def demo_actividad4(layout_name="mediumClassic"):
+  """Replica experimentos/actividad4_astar_nulo.py."""
+
+  def _medir(nombre, funcion):
+    state = _demo_estado(layout_name)
+    problem = PositionSearchProblem(state, warn=False)
+
+    inicio = time.perf_counter()
+    acciones = funcion(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+
+    _guardar_fila_demo({
+      "actividad": "4",
+      "metodo_heuristica": nombre,
+      "layout": layout_name,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": "si",
+    })
+    return costo, len(acciones), expandidos, tiempo
+
+  print("=" * 70)
+  print(f"Actividad 4 - A* con h(n)=0 vs. UCS sobre '{layout_name}'")
+  print("=" * 70)
+
+  resultados = {
+    "UCS": _medir("UCS", search.uniformCostSearch),
+    "A* + h(n)=0": _medir("A*+h=0", lambda p: search.aStarSearch(p, search.nullHeuristic)),
+  }
+
+  print(f"\n{'Algoritmo':15s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
+    print(f"{nombre:15s} {costo:6d} {expandidos:11d} {tiempo:12.6f}")
+
+  costo_ucs = resultados["UCS"][0]
+  exp_ucs = resultados["UCS"][2]
+  costo_astar = resultados["A* + h(n)=0"][0]
+  exp_astar = resultados["A* + h(n)=0"][2]
+
+  print("\nVerificacion:")
+  print(f"  Mismo costo (ambas optimas): {costo_ucs == costo_astar}")
+  print(f"  Mismos nodos expandidos:     {exp_ucs == exp_astar}")
+  print("\nFilas guardadas en resultados.csv (actividad=4).")
+
+
+def demo_actividad5(layout_name="mediumClassic"):
+  """Replica experimentos/actividad5_manhattan.py."""
+
+  def _medir(nombre, funcion):
+    state = _demo_estado(layout_name)
+    problem = PositionSearchProblem(state, warn=False)
+
+    inicio = time.perf_counter()
+    acciones = funcion(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+    celdas_exploradas = list(problem._visitedlist)
+
+    _guardar_fila_demo({
+      "actividad": "5",
+      "metodo_heuristica": nombre,
+      "layout": layout_name,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": "si",
+    })
+    return costo, len(acciones), expandidos, tiempo, celdas_exploradas
+
+  print("=" * 70)
+  print(f"Actividad 5 - A* con distancia Manhattan vs. UCS sobre '{layout_name}'")
+  print("=" * 70)
+
+  resultados = {
+    "UCS": _medir("UCS", search.uniformCostSearch),
+    "A* + Manhattan": _medir("A*+Manhattan", lambda p: search.aStarSearch(p, manhattanHeuristic)),
+  }
+
+  print(f"\n{'Algoritmo':16s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, tiempo, _) in resultados.items():
+    print(f"{nombre:16s} {costo:6d} {expandidos:11d} {tiempo:12.6f}")
+
+  exp_ucs = resultados["UCS"][2]
+  exp_man = resultados["A* + Manhattan"][2]
+  celdas_ucs = set(resultados["UCS"][4])
+  celdas_man = set(resultados["A* + Manhattan"][4])
+
+  print(f"\nReduccion de nodos expandidos: UCS={exp_ucs} -> A*+Manhattan={exp_man} "
+        f"(R = {exp_ucs / exp_man:.2f}x menos expansiones)")
+  print(f"Celdas exploradas por UCS pero NO por A*+Manhattan: "
+        f"{len(celdas_ucs - celdas_man)} de {len(celdas_ucs)}")
+
+  print("\nFilas guardadas en resultados.csv (actividad=5).")
+
+
+def demo_actividad6(layout_name="mediumClassic"):
+  """Replica experimentos/actividad6_euclidiana.py."""
+
+  def _medir(nombre, heuristica):
+    state = _demo_estado(layout_name)
+    problem = PositionSearchProblem(state, warn=False)
+
+    inicio = time.perf_counter()
+    acciones = search.aStarSearch(problem, heuristica)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+
+    _guardar_fila_demo({
+      "actividad": "6",
+      "metodo_heuristica": nombre,
+      "layout": layout_name,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": "si",
+    })
+    return costo, len(acciones), expandidos, tiempo
+
+  print("=" * 78)
+  print(f"Actividad 6 - Comparacion de heuristicas (A*) sobre '{layout_name}'")
+  print("=" * 78)
+
+  heuristicas = {
+    "h(n)=0": search.nullHeuristic,
+    "Manhattan": manhattanHeuristic,
+    "Euclidiana": euclideanHeuristic,
+  }
+  resultados = {nombre: _medir(nombre, h) for nombre, h in heuristicas.items()}
+
+  print(f"\n{'Heuristica':12s} {'Longitud':>9s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
+    print(f"{nombre:12s} {longitud:9d} {costo:6d} {expandidos:11d} {tiempo:12.6f}")
+
+  exp_null = resultados["h(n)=0"][2]
+  exp_man = resultados["Manhattan"][2]
+  exp_euc = resultados["Euclidiana"][2]
+
+  print(f"\nManhattan expande {exp_null - exp_man} nodos menos que h(n)=0 "
+        f"({exp_null} -> {exp_man}).")
+  print(f"Euclidiana expande {exp_null - exp_euc} nodos menos que h(n)=0 "
+        f"({exp_null} -> {exp_euc}).")
+  print(f"Manhattan vs. Euclidiana: {exp_man} vs. {exp_euc} nodos expandidos "
+        f"({'Manhattan es mas informativa' if exp_man < exp_euc else 'Euclidiana es mas informativa' if exp_euc < exp_man else 'empate'} "
+        f"en este layout).")
+
+  print("\nFilas guardadas en resultados.csv (actividad=6).")
+
+
+def demo_actividad7():
+  """Replica experimentos/actividad7_corners_estado.py."""
+  layout_principal = "tinyCorners"
+
+  def _probar_conectividad_mediumCorners():
+    state = _demo_estado("mediumCorners")
+    problem = PositionSearchProblem(state, goal=(1, 1), warn=False)
+    acciones = search.uniformCostSearch(problem)
+    alcanzable = len(acciones) > 0 or problem.isGoalState(problem.getStartState())
+    print(f"Verificacion mediumCorners: (1,1) alcanzable desde el inicio = {alcanzable}")
+    if not alcanzable:
+      print("  -> Confirmado con PositionSearchProblem (codigo del profesor, sin tocar):")
+      print("     el punto de partida de mediumCorners esta en un cuarto sellado.")
+      print("     mediumCorners NO se usa como layout de referencia por este motivo.")
+    return alcanzable
+
+  def _probar_corners(layout_name):
+    state = _demo_estado(layout_name)
+    problem = CornersProblem(state)
+
+    print(f"Layout: {layout_name}")
+    print(f"  Esquinas: {problem.corners}")
+    print(f"  Estado inicial: {problem.getStartState()}")
+
+    inicio = time.perf_counter()
+    acciones = search.uniformCostSearch(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+
+    _guardar_fila_demo({
+      "actividad": "7",
+      "metodo_heuristica": "UCS",
+      "layout": layout_name,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": "si",
+    })
+
+    print(f"  UCS: costo={costo} longitud={len(acciones)} expandidos={expandidos} tiempo={tiempo:.6f}s")
+    print()
+
+  _probar_conectividad_mediumCorners()
+  print()
+  _probar_corners(layout_principal)
+  print("Filas guardadas en resultados.csv (actividad=7).")
+
+
+def demo_actividad8():
+  """Replica experimentos/actividad8_corners_heuristica.py."""
+  layout_principal = "tinyCorners"
+  costo_optimo_conocido = 22  # de la Actividad 7 (UCS sobre tinyCorners)
+
+  def _nuevo_problema():
+    state = _demo_estado(layout_principal)
+    return CornersProblem(state)
+
+  def _medir(nombre, funcion_busqueda):
+    problem = _nuevo_problema()
+
+    inicio = time.perf_counter()
+    acciones = funcion_busqueda(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+
+    _guardar_fila_demo({
+      "actividad": "8",
+      "metodo_heuristica": nombre,
+      "layout": layout_principal,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": "si",
+    })
+    return costo, len(acciones), expandidos, tiempo
+
+  problem0 = _nuevo_problema()
+  inicio_estado = problem0.getStartState()
+  h_basica = cornersHeuristicBasica(inicio_estado, problem0)
+  h_propuesta = cornersHeuristic(inicio_estado, problem0)
+
+  print(f"Estado inicial: {inicio_estado}")
+  print(f"  h*(inicio) real (costo optimo, Actividad 7) = {costo_optimo_conocido}")
+  print(f"  h_basica(inicio)    = {h_basica}  "
+        f"({'OK, no sobreestima' if h_basica <= costo_optimo_conocido else 'FALLA: sobreestima'})")
+  print(f"  h_propuesta(inicio) = {h_propuesta}  "
+        f"({'OK, no sobreestima' if h_propuesta <= costo_optimo_conocido else 'FALLA: sobreestima'})")
+  print()
+
+  print("=" * 78)
+  print(f"Actividad 8 - Comparacion de heuristicas de esquinas sobre '{layout_principal}'")
+  print("=" * 78)
+
+  heuristicas = {
+    "h(n)=0": lambda p: search.aStarSearch(p, search.nullHeuristic),
+    "Heuristica basica": lambda p: search.aStarSearch(p, cornersHeuristicBasica),
+    "Heuristica propuesta": lambda p: search.aStarSearch(p, cornersHeuristic),
+  }
+  resultados = {nombre: _medir(nombre, f) for nombre, f in heuristicas.items()}
+
+  print(f"{'Heuristica':22s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
+  for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
+    print(f"{nombre:22s} {costo:6d} {longitud:9d} {expandidos:11d} {tiempo:12.6f}")
+
+  exp0 = resultados["h(n)=0"][2]
+  expB = resultados["Heuristica basica"][2]
+  expP = resultados["Heuristica propuesta"][2]
+  print(f"Heuristica basica expande {exp0 - expB} nodos menos que h=0 ({exp0} -> {expB}).")
+  print(f"Heuristica propuesta expande {exp0 - expP} nodos menos que h=0 ({exp0} -> {expP}), "
+        f"y {expB - expP} menos que la basica ({expB} -> {expP}).")
+  print()
+  print("Filas guardadas en resultados.csv (actividad=8).")
+
+
+def demo_actividad9():
+  """Replica experimentos/actividad9_corners_comparacion.py."""
+  layout_principal = "tinyCorners"
+
+  def _nuevo_problema():
+    state = _demo_estado(layout_principal)
+    return CornersProblem(state)
+
+  def _medir(metodo, funcion_busqueda, costo_optimo_referencia):
+    problem = _nuevo_problema()
+
+    inicio = time.perf_counter()
+    acciones = funcion_busqueda(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+    optimo = "si" if costo == costo_optimo_referencia else "no"
+
+    _guardar_fila_demo({
+      "actividad": "9",
+      "metodo_heuristica": metodo,
+      "layout": layout_principal,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": optimo,
+    })
+    return costo, len(acciones), expandidos, tiempo, optimo
+
+  print("=" * 88)
+  print(f"Actividad 9 - Experimento comparativo sobre '{layout_principal}'")
+  print("=" * 88)
+
+  problem_ucs = _nuevo_problema()
+  inicio = time.perf_counter()
+  acciones_ucs = search.uniformCostSearch(problem_ucs)
+  t_ucs = time.perf_counter() - inicio
+  costo_ucs = problem_ucs.getCostOfActions(acciones_ucs)
+  long_ucs = len(acciones_ucs)
+  exp_ucs = problem_ucs._expanded
+  _guardar_fila_demo({
+    "actividad": "9", "metodo_heuristica": "UCS", "layout": layout_principal,
+    "costo": costo_ucs, "longitud_camino": long_ucs, "nodos_expandidos": exp_ucs,
+    "tiempo_seg": f"{t_ucs:.6f}", "optimo": "si",
+  })
+
+  metodos = {
+    "A* + h=0": lambda p: search.aStarSearch(p, search.nullHeuristic),
+    "A* + heuristica basica": lambda p: search.aStarSearch(p, cornersHeuristicBasica),
+    "A* + heuristica propuesta": lambda p: search.aStarSearch(p, cornersHeuristic),
+  }
+
+  filas = {"UCS": (costo_ucs, long_ucs, exp_ucs, t_ucs, "si")}
+  for nombre, f in metodos.items():
+    filas[nombre] = _medir(nombre, f, costo_optimo_referencia=costo_ucs)
+
+  print(f"{'Metodo':26s} {'Costo':>6s} {'Expandidos':>11s} {'Tiempo (s)':>12s} {'Optimo':>7s}")
+  for nombre, (costo, longitud, expandidos, tiempo, optimo) in filas.items():
+    print(f"{nombre:26s} {costo:6d} {expandidos:11d} {tiempo:12.6f} {optimo:>7s}")
+
+  n_ucs = filas["UCS"][2]
+  n_astar_propuesta = filas["A* + heuristica propuesta"][2]
+  R = n_ucs / n_astar_propuesta
+  print()
+  print(f"Factor de reduccion R = N_UCS / N_A* = {n_ucs} / {n_astar_propuesta} = {R:.2f}")
+  print(f"(usando la heuristica propuesta, la mas informada, como referencia de N_A*)")
+  print(f"UCS expandio aproximadamente {R:.2f} veces mas estados que A*+heuristica propuesta.")
+  print()
+  print("Filas guardadas en resultados.csv (actividad=9).")
+
+
+def demo_actividad10():
+  """Replica experimentos/actividad10_food_baseline.py."""
+  layouts = ["tinySearch", "testClassic"]
+
+  def _medir(layout_name, nombre, funcion_busqueda):
+    state = _demo_estado(layout_name)
+    problem = FoodSearchProblem(state)
+
+    inicio = time.perf_counter()
+    acciones = funcion_busqueda(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+    numFoodInicial = state.getFood().count()
+
+    _guardar_fila_demo({
+      "actividad": "10",
+      "metodo_heuristica": nombre,
+      "layout": layout_name,
+      "costo": costo,
+      "longitud_camino": len(acciones),
+      "nodos_expandidos": expandidos,
+      "tiempo_seg": f"{tiempo:.6f}",
+      "optimo": "si",
+    })
+    return costo, len(acciones), expandidos, tiempo, numFoodInicial
+
+  def _explorar(layout_name):
+    print("=" * 78)
+    print(f"Actividad 10 - FoodSearchProblem sobre '{layout_name}'")
+    print("=" * 78)
+
+    costo_u, long_u, exp_u, t_u, nfood = _medir(layout_name, "UCS", search.uniformCostSearch)
+    costo_a, long_a, exp_a, t_a, _ = _medir(
+      layout_name, "A*+h(n)=0", lambda p: search.aStarSearch(p, search.nullHeuristic)
+    )
+
+    print(f"Alimentos iniciales en el layout: {nfood}")
+    print(f"{'Metodo':12s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
+    print(f"{'UCS':12s} {costo_u:6d} {long_u:9d} {exp_u:11d} {t_u:12.6f}")
+    print(f"{'A*+h(n)=0':12s} {costo_a:6d} {long_a:9d} {exp_a:11d} {t_a:12.6f}")
+    print("Verificado: mismo costo optimo y mismos nodos expandidos (igual que en la Actividad 4).")
+    print()
+
+  for layout_name in layouts:
+    _explorar(layout_name)
+
+  print("=" * 78)
+  print("Nota sobre crecimiento del espacio de estados (no incluido en resultados.csv):")
+  print("Se intento correr UCS sobre 'smallClassic' (55 alimentos) con un limite de 45s")
+  print("y NO termino: es la explosion combinatoria 2^F que menciona la guia (con F=55,")
+  print("2^55 configuraciones posibles de alimento presente/consumido). Por eso los")
+  print("layouts de esta actividad y de la 11 se restringen a testClassic (8 alimentos)")
+  print("y tinySearch (1 alimento), donde UCS puro SI es viable como linea base.")
+  print("Filas guardadas en resultados.csv (actividad=10).")
+
+
+def demo_actividad11():
+  """Replica experimentos/actividad11_food_heuristic.py."""
+  layouts_comparacion = ["tinySearch", "testClassic"]
+  layouts_cache = ["testClassic", "capsuleClassic"]
+  repeticiones_cache = 5
+
+  def _medir(layout_name, nombre, funcion_busqueda, guardar=True):
+    state = _demo_estado(layout_name)
+    problem = FoodSearchProblem(state)
+
+    inicio = time.perf_counter()
+    acciones = funcion_busqueda(problem)
+    tiempo = time.perf_counter() - inicio
+
+    costo = problem.getCostOfActions(acciones)
+    expandidos = problem._expanded
+
+    if guardar:
+      _guardar_fila_demo({
+        "actividad": "11",
+        "metodo_heuristica": nombre,
+        "layout": layout_name,
+        "costo": costo,
+        "longitud_camino": len(acciones),
+        "nodos_expandidos": expandidos,
+        "tiempo_seg": f"{tiempo:.6f}",
+        "optimo": "si",
+      })
+    return costo, len(acciones), expandidos, tiempo
+
+  def _comparar_heuristicas(layout_name):
+    print("=" * 78)
+    print(f"Actividad 11 - Comparacion de heuristicas de comida sobre '{layout_name}'")
+    print("=" * 78)
+
+    heuristicas = {
+      "h(n)=0": lambda p: search.aStarSearch(p, search.nullHeuristic),
+      "Heuristica 1": lambda p: search.aStarSearch(p, foodHeuristicV1),
+      "Heuristica 2": lambda p: search.aStarSearch(p, foodHeuristic),
+    }
+    resultados = {nombre: _medir(layout_name, nombre, f) for nombre, f in heuristicas.items()}
+
+    print(f"{'Heuristica':14s} {'Costo':>6s} {'Longitud':>9s} {'Expandidos':>11s} {'Tiempo (s)':>12s}")
+    for nombre, (costo, longitud, expandidos, tiempo) in resultados.items():
+      print(f"{nombre:14s} {costo:6d} {longitud:9d} {expandidos:11d} {tiempo:12.6f}")
+
+    exp0 = resultados["h(n)=0"][2]
+    exp1 = resultados["Heuristica 1"][2]
+    exp2 = resultados["Heuristica 2"][2]
+    print(f"Heuristica 1 expande {exp0 - exp1} nodos menos que h=0 ({exp0} -> {exp1}).")
+    print(f"Heuristica 2 expande {exp0 - exp2} nodos menos que h=0 ({exp0} -> {exp2}), "
+          f"y {exp1 - exp2} menos que Heuristica 1 ({exp1} -> {exp2}).")
+    print()
+
+  def _comparar_cache(layout_name):
+    print("=" * 78)
+    print(f"Actividad 11 - Reto de cache (Heuristica 2 con/sin problem.heuristicInfo) en '{layout_name}'")
+    print("=" * 78)
+
+    tiempos_con, tiempos_sin = [], []
+    for _ in range(repeticiones_cache):
+      _, _, exp_con, t_con = _medir(
+        layout_name, "H2_con_cache", lambda p: search.aStarSearch(p, foodHeuristic), guardar=False
+      )
+      _, _, exp_sin, t_sin = _medir(
+        layout_name, "H2_sin_cache", lambda p: search.aStarSearch(p, foodHeuristicV2SinCache), guardar=False
+      )
+      tiempos_con.append(t_con)
+      tiempos_sin.append(t_sin)
+
+    prom_con = sum(tiempos_con) / len(tiempos_con)
+    prom_sin = sum(tiempos_sin) / len(tiempos_sin)
+
+    _guardar_fila_demo({
+      "actividad": "11", "metodo_heuristica": "H2_con_cache", "layout": layout_name,
+      "costo": "-", "longitud_camino": "-", "nodos_expandidos": exp_con,
+      "tiempo_seg": f"{prom_con:.6f}", "optimo": "si",
+    })
+    _guardar_fila_demo({
+      "actividad": "11", "metodo_heuristica": "H2_sin_cache", "layout": layout_name,
+      "costo": "-", "longitud_camino": "-", "nodos_expandidos": exp_sin,
+      "tiempo_seg": f"{prom_sin:.6f}", "optimo": "si",
+    })
+
+    print(f"Nodos expandidos (identicos en ambas, misma heuristica): {exp_con}")
+    print(f"Tiempo promedio CON cache ({repeticiones_cache} corridas): {prom_con:.6f}s "
+          f"{[round(t, 5) for t in tiempos_con]}")
+    print(f"Tiempo promedio SIN cache ({repeticiones_cache} corridas): {prom_sin:.6f}s "
+          f"{[round(t, 5) for t in tiempos_sin]}")
+    diferencia_pct = (prom_sin / prom_con - 1) * 100 if prom_con > 0 else 0
+    print(f"Diferencia: {diferencia_pct:+.1f}% (sin cache vs. con cache).")
+    print()
+
+  for layout_name in layouts_comparacion:
+    _comparar_heuristicas(layout_name)
+  for layout_name in layouts_cache:
+    _comparar_cache(layout_name)
+
+  print("Filas guardadas en resultados.csv (actividad=11).")
+
+
+if __name__ == "__main__":
+  import sys
+
+  _DEMOS = {
+    1: demo_actividad1,
+    2: demo_actividad2,
+    3: demo_actividad3,
+    4: demo_actividad4,
+    5: demo_actividad5,
+    6: demo_actividad6,
+    7: demo_actividad7,
+    8: demo_actividad8,
+    9: demo_actividad9,
+    10: demo_actividad10,
+    11: demo_actividad11,
+  }
+
+  if len(sys.argv) > 1:
+    _numeros = [int(a) for a in sys.argv[1:]]
+  else:
+    _numeros = list(range(1, 12))
+
+  for _n in _numeros:
+    if _n not in _DEMOS:
+      print(f"Actividad {_n} no existe (usar un numero entero de 1 a 11).")
+      continue
+    _DEMOS[_n]()
+    print()
