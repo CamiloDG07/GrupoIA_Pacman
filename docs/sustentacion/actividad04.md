@@ -3,7 +3,8 @@
 > Uso interno del grupo. No se entrega al profesor.
 
 ## Qué se hizo
-Se formalizó, con `experimentos/actividad4_astar_nulo.py` sobre `mediumClassic`, la comparación
+Se formalizó, con `demo_actividad4()` (`pacman/searchAgents.py`, `python searchAgents.py 4`) sobre
+`mediumClassic`, la comparación
 UCS vs. A*+h(n)=0 que ya se había verificado (para 5 layouts) en la Actividad 3. Mismo costo (12) y
 mismos nodos expandidos (69, número corregido tras el fix del desempate en la cola de prioridad —
 ver Actividad 3) en ambos algoritmos. Guardado en `resultados/resultados.csv` con `actividad=4`.

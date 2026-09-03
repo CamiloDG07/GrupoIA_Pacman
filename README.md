@@ -36,7 +36,10 @@ GrupoIA_Pacman/
 │   ├── search.py           # Algoritmos de busqueda: uniformCostSearch y aStarSearch (implementados por el grupo)
 │   ├── searchAgents.py     # Definicion de problemas y heuristicas: CornersProblem, cornersHeuristic,
 │   │                       #   FoodSearchProblem, foodHeuristic (implementados por el grupo), mas los
-│   │                       #   agentes ya armados AStarCornersAgent / AStarFoodSearchAgent
+│   │                       #   agentes ya armados AStarCornersAgent / AStarFoodSearchAgent. Al final
+│   │                       #   (sin tocar el codigo de arriba) trae demo_actividad1..11: reproducen
+│   │                       #   por si solas, sin depender de otra carpeta, los datos de cada actividad
+│   │                       #   (ver "python searchAgents.py N" en la seccion 6).
 │   ├── pacman.py           # Motor principal del juego (codigo del profesor, no se toca)
 │   ├── game.py             # Reglas del juego y logica de estado (codigo del profesor)
 │   ├── util.py             # Estructuras de datos auxiliares: PriorityQueue, Stack, Queue (codigo del profesor)
@@ -45,16 +48,11 @@ GrupoIA_Pacman/
 │   ├── layout.py           # Carga los archivos .lay y calcula coordenadas (codigo del profesor)
 │   └── layouts/*.lay       # Mapas/laberintos de prueba (tinyMaze, mediumClassic, tinyCorners, etc.)
 │
-├── experimentos/
-│   └── actividadN_*.py     # Un script por actividad. Cada uno importa pacman/ y ejecuta el algoritmo
-│                            #   correspondiente sobre un layout concreto, midiendo nodos expandidos, costo
-│                            #   y tiempo. No reimplementan nada: son el instrumento de medicion, no la solucion.
-│                            #   Cada corrida agrega una fila a resultados/resultados.csv.
-│
 ├── resultados/
-│   └── resultados.csv      # Tabla consolidada: una fila por corrida de experimento, con las columnas
-│                            #   actividad, metodo, layout, costo, nodos expandidos y tiempo. Es la fuente
-│                            #   de todos los numeros citados en el informe.
+│   └── resultados.csv      # Snapshot verificado de los datos citados en el informe (columnas:
+│                            #   actividad, metodo, layout, costo, nodos expandidos y tiempo). Se
+│                            #   regenera corriendo "python searchAgents.py" (ver seccion 6) y
+│                            #   copiando aqui el resultados.csv que produce.
 │
 ├── docs/
 │   └── latex/
@@ -94,9 +92,11 @@ duplicar código:
 
 1. **Un commit de Git por actividad.** `git log --oneline` y `git show <commit>` muestran,
    actividad por actividad, qué línea se agregó o modificó en el código fuente único.
-2. **Un script de experimento por actividad**, en `experimentos/`. Sirve como evidencia
-   reproducible y como demostración en vivo: ante una pregunta del tipo "¿qué pasa si cambio X?",
-   se corre ese único script y se observa el efecto sin tocar el resto del proyecto.
+2. **Una función `demo_actividadN()` por actividad**, al final de `pacman/searchAgents.py`
+   (`python searchAgents.py N`). Sirve como evidencia reproducible y como demostración en vivo:
+   ante una pregunta del tipo "¿qué pasa si cambio X?", se corre ese único comando y se observa el
+   efecto sin tocar el resto del proyecto — y funciona incluso con solo los 4 archivos del zip de
+   entrega puestos sobre el proyecto base del profesor (ver sección 8).
 3. **Una sección de informe por actividad**, en `docs/latex/secciones/`. Documenta de forma
    granular el procedimiento, los resultados y el análisis de cada punto, sin duplicar el código
    que ya vive en `pacman/`.
@@ -167,15 +167,18 @@ python pacman.py -l tinyCorners -p AStarCornersAgent
 python pacman.py -l testClassic -p AStarFoodSearchAgent
 ```
 
-Para generar los datos que van al informe, desde la **raíz** del proyecto (no desde `pacman/`):
+Para generar los datos que van al informe, desde dentro de `pacman/` (mismo `cd pacman` de arriba):
 
 ```bash
-python experimentos/actividad1_exploracion.py
-python experimentos/actividad2_ucs.py
-# ... un script por actividad, ver experimentos/
+python searchAgents.py        # corre las 11 actividades en orden
+python searchAgents.py 2      # o solo una actividad puntual
+python searchAgents.py 7 8 9  # o varias
 ```
 
-Cada script imprime sus resultados en la terminal y agrega una fila a `resultados/resultados.csv`.
+Cada actividad imprime sus resultados en la terminal y agrega una fila a un `resultados.csv` en
+`pacman/` (ver "Regla de oro" en la sección 2: esta lógica vive al final de `searchAgents.py`, sin
+tocar el código de arriba). Para actualizar el `resultados/resultados.csv` de la raíz del
+repositorio con datos nuevos, copiar ese archivo generado hacia allá.
 
 Para compilar el informe manualmente (sin la extensión de VS Code):
 
@@ -188,8 +191,9 @@ pdflatex informe.tex   # se corre dos veces para resolver el indice y las refere
 ## 7. Flujo de trabajo por actividad
 
 1. Completar el código correspondiente en `pacman/search.py` o `pacman/searchAgents.py`.
-2. Ejecutar el script de esa actividad en `experimentos/` y verificar que la fila se agregó a
-   `resultados/resultados.csv`.
+2. Ejecutar `python searchAgents.py N` (dentro de `pacman/`) para esa actividad y verificar la
+   fila que agrega al `resultados.csv` local (copiarla a `resultados/resultados.csv` si se quiere
+   actualizar la tabla oficial del repositorio).
 3. Redactar la sección correspondiente en `docs/latex/secciones/actividadNN_*.tex`.
 4. `git add -A && git commit -m "Actividad N: <lo que se implementó>"`.
 

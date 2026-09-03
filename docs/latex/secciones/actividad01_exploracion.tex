@@ -11,20 +11,6 @@ Pac-Man se controla con las flechas de direccion o con las teclas \texttt{W}, \t
 \texttt{S}, \texttt{D}. Se observaron la posicion inicial del agente, la ubicacion de las
 paredes, los alimentos disponibles y los movimientos permitidos desde cada celda.
 
-Adicionalmente, para dejar evidencia reproducible (sin depender de la exploracion manual), se
-instancio programaticamente el mismo \texttt{PositionSearchProblem} que usa internamente
-\texttt{SearchAgent} (ver \texttt{experimentos/actividad1\_exploracion.py}), y se imprimieron sus
-componentes sobre el layout \texttt{tinyMaze.lay}:
-
-\begin{verbatim}
-[s0] Estado inicial:    (1, 7)
-[A]  Acciones disponibles en s0:
-     accion=South  -> sucesor=(1, 6)  costo_paso=1
-[G]  Prueba de objetivo isGoalState(s0) = False
-     Objetivo configurado en este problema: problem.goal = (1, 1)
-[C]  Costo: 1 por movimiento
-\end{verbatim}
-
 \subsection{De donde sale el estado inicial (9,1)}
 
 El estado inicial $(9,1)$ no se calculo a mano: sale directamente del archivo de layout
@@ -59,31 +45,10 @@ coordenadas $(x,y)$ sigue dos reglas:
   indice 9 desde arriba, que equivale a $10-9=1$ desde abajo $\Rightarrow y=1$.
 \end{itemize}
 
-Por eso el estado inicial es $(9,1)$.
-
-\paragraph{Verificacion adicional con varios agentes.} Este mismo layout permite confirmar la
-convencion con mas de un agente: las dos \texttt{G} (fantasmas) estan en la fila 5, columnas 8 y
-11 $\Rightarrow y = 10-5 = 5 \Rightarrow$ posiciones $(8,5)$ y $(11,5)$. Esto se confirmo
-programaticamente (comando ejecutado desde dentro de \texttt{pacman/}, porque \texttt{layout.py}
-busca la carpeta \texttt{layouts/} relativa al directorio de trabajo actual):
-
-\begin{verbatim}
-python -c "
-import layout as layout_module
-print(layout_module.getLayout('mediumClassic').agentPositions)
-"
-[(True, (9, 1)), (False, (8, 5)), (False, (11, 5))]
-\end{verbatim}
-
-\texttt{agentPositions} es una lista de pares (\texttt{esPacman}, \texttt{posicion}): el primer
-elemento, con \texttt{True}, es Pac-Man en $(9,1)$ --confirmando el calculo manual de arriba--; los
-otros dos, con \texttt{False}, son los dos fantasmas en $(8,5)$ y $(11,5)$.
-
-Esta conversion la hace internamente \texttt{layout.py} (codigo del profesor, sin modificar) al
-cargar el archivo \texttt{.lay}; \texttt{getStartState()} de \texttt{PositionSearchProblem} solo
-devuelve el resultado ya calculado. El mismo procedimiento aplica para leer el estado inicial de
-cualquier otro layout usado en el resto del informe --por ejemplo \texttt{tinyMaze}, usado en la
-seccion anterior, donde el mismo metodo da $(1,7)$--.
+Por eso el estado inicial es $(9,1)$. Esta conversion la hace internamente \texttt{layout.py}
+(codigo del profesor, sin modificar) al cargar el archivo \texttt{.lay}; \texttt{getStartState()}
+de \texttt{PositionSearchProblem} solo devuelve el resultado ya calculado. El mismo procedimiento
+aplica para leer el estado inicial de cualquier otro layout usado en el resto del informe.
 
 \subsection{Componentes del problema de busqueda}
 
@@ -104,12 +69,24 @@ Acciones ($A$) & $\{North, South, East, West\}$; una accion solo es legal si la 
 Funcion sucesor ($T$) & \texttt{getSuccessors(state)}: por cada accion legal retorna la terna \\
  & (estado sucesor, accion, costo del paso). \\
 Objetivo ($G$) & \texttt{isGoalState(state)}: en \texttt{PositionSearchProblem}, llegar a la \\
- & posicion configurada como meta (por defecto $(1,1)$). \\
-Costo ($C$) & 1 por cada movimiento; el costo total de un plan es la suma de \\
- & los costos de sus pasos, es decir, su longitud. \\
+ & posicion configurada como meta (parametro \texttt{goal}, por defecto $(1,1)$). \\
+Costo ($C$) & 1 por cada movimiento (parametro \texttt{costFn}, por defecto \\
+ & \texttt{lambda x: 1}); el costo total de un plan es la suma de los costos \\
+ & de sus pasos, es decir, su longitud. \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\texttt{goal} y \texttt{costFn} no se calcularon a mano: son parametros con valor por defecto en la
+firma de \texttt{PositionSearchProblem.\_\_init\_\_} (\texttt{pacman/searchAgents.py}, linea 131):
+
+\begin{verbatim}
+def __init__(self, gameState, costFn = lambda x: 1, goal=(1,1), start=None, warn=True):
+\end{verbatim}
+
+Por eso, si no se especifica lo contrario al construir el problema, la meta por defecto es $(1,1)$
+y cada paso cuesta 1 (la funcion \texttt{lambda x: 1} ignora el estado que recibe y siempre
+devuelve 1).
 
 \subsection{Analisis}
 

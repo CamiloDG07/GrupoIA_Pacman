@@ -14,9 +14,7 @@ donde \texttt{esquinas\_visitadas} es una tupla de 4 booleanos, uno por cada esq
 \texttt{self.corners} (en el mismo orden: \texttt{(1,1)}, \texttt{(1,top)}, \texttt{(right,1)},
 \texttt{(right,top)}). Se eligió una tupla --no una lista-- porque el estado tiene que ser
 \emph{hasheable y comparable} para funcionar dentro de \texttt{util.PriorityQueue} y de cualquier
-diccionario de costos: las tuplas de booleanos cumplen ambas propiedades sin ningún esfuerzo extra
-(a diferencia del \texttt{foodGrid} de \texttt{FoodSearchProblem}, que sí necesitó el contador de
-desempate documentado en la Actividad 3 precisamente porque no es comparable).
+diccionario de costos: las tuplas de booleanos cumplen ambas propiedades sin ningún esfuerzo extra.
 
 \begin{figure}[H]
 \centering
@@ -43,7 +41,7 @@ marcada, se genera una tupla nueva con esa esquina en \texttt{True}.
 
 \subsection{Procedimiento y resultados}
 
-Se ejecutó UCS sobre \texttt{tinyCorners} (ver \texttt{experimentos/actividad7\_corners\_estado.py}).
+Se ejecutó UCS sobre \texttt{tinyCorners} (ver \texttt{demo\_actividad7()} en \texttt{pacman/searchAgents.py}).
 
 \begin{table}[H]
 \centering

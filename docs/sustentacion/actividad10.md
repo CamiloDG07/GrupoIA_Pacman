@@ -5,7 +5,8 @@
 ## Qué se hizo
 `FoodSearchProblem` ya viene implementado por el profesor; no se escribió código nuevo. Se corrió
 UCS y A*+h(n)=0 sobre `tinySearch` (1 alimento) y `testClassic` (8 alimentos) con
-`experimentos/actividad10_food_baseline.py`, confirmando que ambos coinciden en costo y nodos
+`demo_actividad10()` (`pacman/searchAgents.py`, `python searchAgents.py 10`), confirmando que
+ambos coinciden en costo y nodos
 expandidos (igual que en la Actividad 4). Se intentó adicionalmente UCS sobre `smallClassic`
 (55 alimentos) con límite de 45s y no terminó — confirma la explosión combinatoria 2^F.
 

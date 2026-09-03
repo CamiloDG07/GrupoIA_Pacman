@@ -5,8 +5,9 @@
 ## Qué se hizo
 Se implementó `uniformCostSearch` en `pacman/search.py`: búsqueda en grafo con
 `util.PriorityQueue` ordenada por `g(n)`, con un diccionario `bestCost` para no re-expandir
-un estado cuando ya se conoce un camino más barato hacia él. Medido con
-`experimentos/actividad2_ucs.py` sobre `mediumMaze` (línea base: costo 30, 32 nodos expandidos).
+un estado cuando ya se conoce un camino más barato hacia él. Medido con `demo_actividad2()`
+(`pacman/searchAgents.py`, `python searchAgents.py 2`) sobre `mediumMaze` (línea base: costo 30,
+32 nodos expandidos).
 
 ## Partes críticas del código
 
@@ -34,7 +35,7 @@ un estado cuando ya se conoce un camino más barato hacia él. Medido con
   que *llegue* a la meta, no el más barato, porque un camino más corto en pasos pero más costoso
   podría generarse antes de que se procese el más barato.
 - **¿Qué pasa si corro `python pacman.py -l mediumMaze -p SearchAgent -a fn=ucs` directamente
-  (sin `-q` y sin pasar por los scripts de `experimentos/`)?**
+  (sin `-q` y sin pasar por `demo_actividad2()`)?**
   Se ve exactamente el mismo costo/nodos/tiempo impresos, pero el proceso termina con
   `Exception: Illegal action Stop` justo después. Es un efecto secundario de que estos layouts
   traen mucha comida extra (no solo un pellet en la meta) y `SearchAgent` (que no se debe tocar)

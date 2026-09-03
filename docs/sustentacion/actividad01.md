@@ -3,10 +3,11 @@
 > Uso interno del grupo. No se entrega al profesor; es material de preparación para la exposición.
 
 ## Qué se hizo
-Se ejecutó `pacman.py` manualmente y, además, se escribió `experimentos/actividad1_exploracion.py`,
-que instancia `PositionSearchProblem` (ya provisto en `searchAgents.py`) y muestra en consola cada
-componente del problema de búsqueda: estado, estado inicial, acciones, función sucesor, objetivo y costo.
-No se modificó ningún algoritmo todavía.
+Se ejecutó `pacman.py` manualmente y, además, se escribió `demo_actividad1()` (al final de
+`pacman/searchAgents.py`, corre con `python searchAgents.py 1`), que instancia
+`PositionSearchProblem` (ya provisto en `searchAgents.py`) y muestra en consola cada componente del
+problema de búsqueda: estado, estado inicial, acciones, función sucesor, objetivo y costo. No se
+modificó ningún algoritmo todavía.
 
 ## Partes críticas del código (para poder explicarlas en vivo)
 
@@ -24,7 +25,8 @@ No se modificó ningún algoritmo todavía.
 - **¿Qué pasa si cambio el layout de `tinyMaze` a `mediumClassic`?**
   Cambia `s0` (posición inicial) y el tamaño del laberinto, pero la estructura del problema
   (`S, A, T, G, C`) es exactamente la misma: solo cambian los valores, no las reglas. Se puede
-  demostrar corriendo `python experimentos/actividad1_exploracion.py mediumClassic`.
+  demostrar cambiando el `layout_name` hardcodeado al inicio de `demo_actividad1()`
+  (`pacman/searchAgents.py`) y volviendo a correr `python searchAgents.py 1`.
 - **¿Qué pasa si Pac-Man arranca pegado a una esquina o pared?**
   `getSuccessors` simplemente devuelve menos de 4 sucesores (algunas direcciones quedan bloqueadas
   por `self.walls`); el problema sigue bien definido, solo con menor factor de ramificación en ese nodo.

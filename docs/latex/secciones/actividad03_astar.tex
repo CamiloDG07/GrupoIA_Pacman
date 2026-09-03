@@ -39,9 +39,9 @@ Comparar con la Figura~\ref{fig:act02-ucs}: la única diferencia real es la lín
 
 \subsection{Verificación de correctitud}
 
-No hay una tabla de resultados exigida en esta actividad (esa llega en la Actividad 4 en
-adelante); en su lugar se verificó que la implementación es correcta comparándola contra la línea
-base de UCS (\texttt{experimentos/actividad3\_astar\_verificacion.py}):
+La guía no exige una tabla de resultados para esta actividad; en su lugar se verificó que la
+implementación es correcta comparándola contra la línea base de UCS
+(\texttt{demo\_actividad3()} en \texttt{pacman/searchAgents.py}):
 
 \begin{table}[H]
 \centering
@@ -63,46 +63,15 @@ trickyClassic  & 12 & 60 & 60 & 15 & 17 \\
 \end{table}
 
 En todos los layouts el costo es idéntico (las cuatro estrategias son óptimas), A*+h=0 expande
-exactamente lo mismo que UCS (Actividad 4 explica por qué), y ninguna heurística expande más
-nodos que h(n)=0. La única excepción aparente es \texttt{mediumMaze}, que no muestra ninguna
-mejora con las heurísticas: como se explica al final de la Actividad 2, ese layout es un pasillo
-sin bifurcaciones, así que no hay ningún punto de decisión donde una heurística pueda influir. Por
-eso, de aquí en adelante, se usa \texttt{mediumClassic} como layout principal para comparar
-heurísticas (Actividades 4, 5, 6 y 9).
-
-\subsection{Corrección: desempate en la cola de prioridad (bug de \emph{tie-breaking})}
-
-Al preparar la Actividad 11 (heurística de comida sobre \texttt{FoodSearchProblem}), correr UCS/A*
-sobre ese problema hizo fallar la implementación con
-\texttt{TypeError: '<' not supported between instances of 'Grid' and 'Grid'}. La causa:
-\texttt{util.PriorityQueue} usa internamente \texttt{heapq}, que guarda tuplas
-\texttt{(prioridad, item)}; cuando dos entradas empatan en prioridad, \texttt{heapq} compara
-\texttt{item} para decidir el orden. En \texttt{PositionSearchProblem} el estado es un par de
-enteros \texttt{(x, y)}, siempre comparable, así que el empate nunca causaba error; en
-\texttt{FoodSearchProblem} el estado incluye un objeto \texttt{Grid} (la matriz de comida
-restante), que no define \texttt{\_\_lt\_\_} y por lo tanto no es comparable.
-
-La corrección fue agregar un contador entero único y creciente como primer elemento de cada tupla
-insertada en la frontera (\texttt{(contador, estado, acciones, costo)} en vez de
-\texttt{(estado, acciones, costo)}, tanto en \texttt{uniformCostSearch} como en
-\texttt{aStarSearch}): como los contadores nunca se repiten, \texttt{heapq} nunca necesita comparar
-el resto de la tupla para resolver un empate, sin importar si el estado es comparable o no.
-
-Esta corrección cambia el criterio exacto de desempate cuando dos nodos comparten la misma
-prioridad --antes dependía, sin quererlo, del orden en que \texttt{heapq} comparaba las tuplas
-\texttt{(estado, acciones, costo)}--; el algoritmo sigue siendo correcto y óptimo (el costo de la
-solución no cambia en ningún experimento), pero el número exacto de \emph{nodos expandidos} sí
-puede cambiar, porque distintos criterios de desempate expanden nodos empatados en distinto orden.
-Por eso todos los números de ``nodos expandidos'' reportados en este informe (Actividades 2 a 6)
-corresponden a la versión ya corregida con el contador de desempate, re-verificados después de
-aplicar el fix.
-
-Este hallazgo es, en sí mismo, una buena respuesta a una pregunta trampa típica: ¿el número de
-nodos expandidos es una propiedad determinista del algoritmo, o depende de detalles de
-implementación de la cola de prioridad? La respuesta es que el costo óptimo sí es determinista
-(depende solo de la heurística y el problema), pero el número exacto de nodos expandidos puede
-depender de cómo se rompen los empates de prioridad --un detalle de implementación, no del
-algoritmo en abstracto.
+exactamente lo mismo que UCS, y ninguna heurística expande más nodos que h(n)=0. La única
+excepción aparente es \texttt{mediumMaze}, que no muestra ninguna mejora con las heurísticas: es
+esencialmente un pasillo sin bifurcaciones, así que no hay ningún punto de decisión donde una
+heurística pueda \emph{preferir} una dirección sobre otra (Manhattan y Euclidiana expanden ahí los
+mismos 32 nodos que UCS). Por eso, de aquí en adelante, se usa \texttt{mediumClassic} como layout
+principal para comparar heurísticas: tiene bifurcaciones reales y, como muestra la tabla, allí
+Manhattan sí reduce los nodos expandidos frente a UCS (69 $\rightarrow$ 15).
+\texttt{mediumMaze} se conserva como caso de contraste ilustrativo (``¿qué pasa si el laberinto no
+tiene bifurcaciones?''), no como el layout principal de la comparación.
 
 \subsection{Análisis}
 
@@ -110,5 +79,5 @@ Que A* con \texttt{nullHeuristic} expanda exactamente los mismos nodos que UCS e
 layouts no es casualidad: con $h(n) = 0$, la prioridad de A* se reduce a $f(n) = g(n) + 0 = g(n)$,
 que es exactamente la prioridad que usa UCS. Ambos algoritmos terminan expandiendo la frontera en
 el mismo orden. Esto confirma que UCS es, formalmente, un caso particular de A* sin información
-adicional --lo que se pedirá justificar explícitamente en la Actividad 4-- y es la primera
-evidencia de que la implementación de A* es correcta antes de introducir heurísticas no triviales.
+adicional, y es la primera evidencia de que la implementación de A* es correcta antes de
+introducir heurísticas no triviales.

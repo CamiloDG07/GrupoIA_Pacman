@@ -5,7 +5,8 @@
 ## Qué se hizo
 Se completaron `getStartState`, `isGoalState` y `getSuccessors` de `CornersProblem` en
 `searchAgents.py`. Estado elegido: `(posición, esquinas_visitadas)`, con `esquinas_visitadas` una
-tupla de 4 booleanos. Medido con `experimentos/actividad7_corners_estado.py` sobre `tinyCorners`:
+tupla de 4 booleanos. Medido con `demo_actividad7()` (`pacman/searchAgents.py`,
+`python searchAgents.py 7`) sobre `tinyCorners`:
 UCS da costo=22, expandidos=295. Se verificó paso a paso que la solución realmente visita las 4
 esquinas. También se descubrió y documentó que `mediumCorners` tiene el punto de partida en un
 cuarto sellado sin salida (confirmado con `PositionSearchProblem`, código del profesor sin tocar).

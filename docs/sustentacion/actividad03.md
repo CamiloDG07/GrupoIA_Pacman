@@ -5,8 +5,8 @@
 ## Qué se hizo
 Se implementó `aStarSearch` en `pacman/search.py`, reutilizando el mismo esqueleto de
 `uniformCostSearch` (Actividad 2) y cambiando solo la prioridad de la cola de `g(n)` a
-`f(n) = g(n) + h(n)`. Se verificó contra la línea base de UCS en 5 layouts
-(`experimentos/actividad3_astar_verificacion.py`). De ahí salió un hallazgo importante: `mediumMaze`
+`f(n) = g(n) + h(n)`. Se verificó contra la línea base de UCS en 5 layouts (`demo_actividad3()`,
+`pacman/searchAgents.py`, `python searchAgents.py 3`). De ahí salió un hallazgo importante: `mediumMaze`
 no diferencia heurísticas (es un pasillo), así que se adoptó `mediumClassic` como layout principal
 para las Actividades 4-9.
 

@@ -4,7 +4,8 @@
 
 ## Qué se hizo
 Se ejecutó A* con `manhattanHeuristic` (ya provista, no se implementó nada nuevo) sobre
-`mediumClassic`, comparándola contra UCS con `experimentos/actividad5_manhattan.py`: mismo costo
+`mediumClassic`, comparándola contra UCS con `demo_actividad5()` (`pacman/searchAgents.py`,
+`python searchAgents.py 5`): mismo costo
 óptimo (12), pero A*+Manhattan expande 4.60x menos nodos (69 → 15; números corregidos tras el fix
 del desempate en la cola de prioridad — ver Actividad 3). Guardado en `resultados/resultados.csv`
 (actividad=5).

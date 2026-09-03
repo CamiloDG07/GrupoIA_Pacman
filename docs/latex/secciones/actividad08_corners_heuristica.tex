@@ -24,10 +24,9 @@ queda ninguna esquina pendiente, $h(n) = 0$).
 \subsection{Heuristica propuesta}
 
 Siguiendo la sugerencia de la guia de analizar ``si es posible disenar una heuristica mas
-informativa'', se generalizo la heuristica basica con el mismo patron de diametro que ya se habia
-usado en \texttt{foodHeuristic} (Actividad 11): en vez de mirar solo la distancia de Pac-Man a la
-esquina pendiente mas lejana, se considera el diametro --la mayor distancia Manhattan entre
-cualquier par-- del conjunto formado por la posicion actual mas todas las esquinas pendientes.
+informativa'', se generalizo la heuristica basica considerando el diametro --la mayor distancia
+Manhattan entre cualquier par-- del conjunto formado por la posicion actual mas todas las esquinas
+pendientes, en vez de mirar solo la distancia de Pac-Man a la esquina pendiente mas lejana.
 
 $$h(n) = \max\Big(\max_{c \in C_p} d_M(n, c),\ \max_{c_i, c_j \in C_p} d_M(c_i, c_j)\Big)$$
 
@@ -45,12 +44,9 @@ aquí se recorren todos los pares de \{posición\}~$\cup$~pendientes, no solo po
 \label{fig:act08-propuesta}
 \end{figure}
 
-A diferencia de \texttt{foodHeuristic}, aqui no se uso \texttt{problem.heuristicInfo} como cache:
-como mucho hay 4 esquinas (nunca mas de 6 pares), asi que el costo de recalcular todas las
-distancias entre pares en cada llamada es insignificante --muy distinto al caso de
-\texttt{FoodSearchProblem}, donde puede haber decenas de alimentos y cientos de pares--. Cachear
-aqui anadiria la misma sobrecarga de diccionario que en la Actividad 11 no compenso, sin ningun
-beneficio real dado lo pequeno del conjunto.
+No se usó ningún mecanismo de cache para las distancias entre esquinas: como hay a lo sumo 4
+esquinas (nunca más de 6 pares), el costo de recalcular todas las distancias entre pares en cada
+llamada es insignificante, así que no se justifica la complejidad adicional de guardarlas.
 
 \subsection{Admisibilidad}
 
@@ -68,48 +64,78 @@ distancia real, el diametro en Manhattan de $\{n\} \cup C_p$ es una cota inferio
 $h(n) \le h^*(n)$.
 
 Ambas cotas se verificaron tambien de forma empirica en el estado inicial de \texttt{tinyCorners}
-(ver el script de la Actividad 8 en \texttt{experimentos/}): $h_{basica}(inicio) = 6$ y
+(ver \texttt{demo\_actividad8()} en \texttt{pacman/searchAgents.py}): $h_{basica}(inicio) = 6$ y
 $h_{propuesta}(inicio) = 12$, ambos por debajo del costo optimo real conocido (22, obtenido con
 UCS en la Actividad 7).
 
-\subsection{Consistencia}
-
-Una heuristica consistente debe cumplir $h(n) \le c(n,n') + h(n')$ para cualquier estado $n$ y
-cualquiera de sus sucesores $n'$, ademas de $h(\text{meta}) = 0$.
-
-Para cualquier sucesor $n'$ de $n$ (un paso ortogonal, costo 1), si el par de puntos que define
-$h(n)$ sigue intacto en $n'$ (ninguno de los dos era la esquina que se acaba de visitar al pasar
-de $n$ a $n'$), entonces por la desigualdad triangular de Manhattan
-$d_M(n, p) \le d_M(n, n') + d_M(n', p) = 1 + d_M(n', p) \le 1 + h(n')$ para el punto $p$
-correspondiente. Si uno de los dos puntos del par era justo la posicion $n$ (que cambia a $n'$) o
-una esquina que se acaba de visitar, el argumento se reduce al caso trivial
-$d_M(n, n') = 1 \le 1 + h(n')$, valido porque $h(n') \ge 0$ siempre. En consecuencia,
-$h(n) \le c(n, n') + h(n')$ se cumple en todos los casos, y $h(\text{meta}) = 0$ (no quedan
-esquinas pendientes). Ambas heuristicas son, entonces, tambien consistentes.
-
-\subsection{Pregunta de análisis (consistencia)}
+\subsection{Pregunta de análisis: ¿son consistentes las heurísticas?}
 
 \textbf{Analice si la heurística propuesta para el problema de las esquinas puede considerarse
 consistente. Justifique su respuesta.}
 
-Sí, la heurística propuesta (y también la básica) es consistente. Como se muestra en la
-subsección anterior, para cualquier sucesor $n'$ de $n$ el valor de $h$ solo puede cambiar en, como
-máximo, 1 unidad respecto a $h(n')$: el punto (esquina o posición) que definía el máximo en $n$ o
-bien sigue presente en $n'$ --y entonces la desigualdad triangular de Manhattan acota
-$d_M(n,p) \le 1 + d_M(n',p) \le 1 + h(n')$--, o bien era la esquina que Pac-Man acaba de visitar al
-pasar de $n$ a $n'$ --y entonces el caso se reduce a $d_M(n,n')=1 \le 1 + h(n')$, válido porque
-$h(n') \ge 0$ siempre--. En ambos casos $h(n) \le c(n,n') + h(n') = 1 + h(n')$, que es exactamente
-la definición de consistencia, y $h(\text{meta}) = 0$ porque al no quedar esquinas pendientes el
-diámetro del conjunto (un único punto, la posición final) es cero. Vale la pena notar que en A*
-con búsqueda en grafo (como la implementada en las Actividades 2-3) la consistencia es, de hecho,
-la propiedad más fuerte que realmente se necesita: consistencia implica admisibilidad, y además
-garantiza que el costo $g(n)$ con el que un estado se expande por primera vez ya es su costo
-óptimo, sin necesidad de reabrir nodos ya expandidos.
+Sí, y el mismo argumento cubre también a la heurística básica (es el caso más simple: solo compara
+la posición con una esquina, nunca una esquina con otra).
+
+\paragraph{Qué hay que demostrar.} Una heurística es consistente si, para cualquier sucesor $n'$
+de un estado $n$, se cumple
+$$h(n) \le c(n,n') + h(n')$$
+es decir: $h$ nunca puede ``bajar de golpe'' más de lo que cuesta el paso que se acaba de dar. Como
+en este problema cada paso cuesta $c(n,n')=1$, la condición se simplifica a mostrar que
+\textbf{$h$ nunca cambia en más de 1 unidad} de un estado a su sucesor inmediato.
+
+\paragraph{La idea, en un dibujo.} Sea $p$ la esquina pendiente que hace máxima a $h(n)$ (el punto
+más lejano que Pac-Man todavía tiene que visitar). $n$ y $n'$ están separados por un único paso, así
+que el triángulo $n$--$n'$--$p$ cumple la desigualdad triangular de la distancia Manhattan: el lado
+$n$--$p$ nunca puede ser más largo que la suma de los otros dos lados.
+
+\begin{center}
+\begin{tikzpicture}[scale=1.15, every node/.style={font=\small}]
+  \coordinate (n) at (0,0);
+  \coordinate (np) at (3.2,0);
+  \coordinate (p) at (1.6,2.4);
+
+  \draw[very thick] (n) -- (np);
+  \draw[very thick, dashed, teal!70!black] (n) -- (p);
+  \draw[very thick, dashed, orange!80!black] (np) -- (p);
+
+  \node[below=10pt] at (1.6,0) {1 paso};
+  \node[left, teal!70!black] at (0.45,1.3) {$d_M(n,p) = h(n)$};
+  \node[right, orange!80!black] at (2.8,1.3) {$d_M(n',p) = h(n')$};
+
+  \filldraw (n) circle (2.2pt) node[left=4pt] {$n$};
+  \filldraw (np) circle (2.2pt) node[right=4pt] {$n'$};
+  \filldraw[red] (p) circle (2.2pt) node[above] {$p$ (esquina pendiente más lejana)};
+\end{tikzpicture}
+\end{center}
+
+Del dibujo se lee directamente la desigualdad triangular: recorrer el lado $n$--$p$ nunca puede
+costar más que ir primero de $n$ a $n'$ (1 paso) y de ahí a $p$ (el lado $n'$--$p$):
+$$d_M(n,p) \;\le\; \underbrace{d_M(n,n')}_{=\,1} + d_M(n',p)$$
+
+\paragraph{Los dos casos posibles al pasar de $n$ a $n'$.}
+
+\begin{enumerate}[label=\textbf{Caso \arabic*:}, leftmargin=2.2cm]
+  \item \textbf{$p$ sigue pendiente en $n'$.} Entonces $d_M(n',p) = h(n')$ (sigue siendo, como
+  mínimo, una de las distancias que $h(n')$ considera), y el dibujo de arriba da directamente
+  $$h(n) = d_M(n,p) \le 1 + d_M(n',p) = 1 + h(n').$$
+  \item \textbf{$p$ era justo la esquina que Pac-Man acaba de visitar al pasar de $n$ a $n'$.}
+  Entonces $p$ ya no cuenta para $h(n')$, pero en ese caso $n$ y $n'$ son vecinos directos, así que
+  $d_M(n,p) = d_M(n,n') = 1$, y como $h(n') \ge 0$ siempre,
+  $$h(n) = 1 \le 1 + h(n').$$
+\end{enumerate}
+
+En ambos casos $h(n) \le 1 + h(n') = c(n,n') + h(n')$: la definición de consistencia se cumple
+siempre. Falta solo el caso base: en la meta no queda ninguna esquina pendiente, así que el
+conjunto se reduce a un único punto (la posición final) y su diámetro es $h(\text{meta}) = 0$.
+
+Vale la pena notar que, en A* con búsqueda en grafo (Actividades 2-3), la consistencia es la
+propiedad que realmente importa: implica admisibilidad, y además garantiza que el costo $g(n)$ con
+el que un estado se expande por primera vez ya es su costo óptimo, sin necesidad de reabrir nodos.
 
 \subsection{Procedimiento y resultados}
 
-Se ejecuto A* con las tres heuristicas sobre \texttt{tinyCorners} (ver el script de la
-Actividad 8 en \texttt{experimentos/}).
+Se ejecuto A* con las tres heuristicas sobre \texttt{tinyCorners} (ver \texttt{demo\_actividad8()}
+en \texttt{pacman/searchAgents.py}).
 
 \begin{table}[H]
 \centering

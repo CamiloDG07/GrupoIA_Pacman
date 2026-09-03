@@ -624,13 +624,12 @@ def mazeDistance(point1, point2, gameState):
 
 ##############################################################################
 # Demos autonomos (actividades 1-11), para que el entregable final          #
-# (search.py + searchAgents.py + resultados.csv + informe.pdf) pueda        #
-# reproducir por si solo, sobre el proyecto base del profesor, todos los    #
-# datos que hoy generan los scripts de experimentos/ -- sin depender de esa #
-# carpeta (que NO viaja dentro del zip de entrega). Replican exactamente    #
-# los mismos layouts, algoritmos/heuristicas y prints de cada script        #
-# experimentos/actividadN_*.py; solo se reimplementa aqui, sin importar     #
-# nada de experimentos/, el guardado de filas en un resultados.csv propio.  #
+# (search.py + searchAgents.py + resultados.csv + informe.pdf) reproduzca   #
+# por si solo, sobre el proyecto base del profesor, todos los datos de cada #
+# actividad, sin depender de ninguna otra carpeta del repositorio. Cada     #
+# demo_actividadN() usa el mismo layout, algoritmo/heuristica y formato de  #
+# salida que se documenta en el informe (docs/latex/secciones/), y guarda   #
+# sus filas con un resultados.csv propio (ver _guardar_fila_demo).          #
 ##############################################################################
 
 def _guardar_fila_demo(fila):
@@ -639,9 +638,8 @@ def _guardar_fila_demo(fila):
   trabajo actual (NO resultados/resultados.csv: esa subcarpeta no existe
   cuando esto se corre solo con los 4 archivos del zip de entrega puestos
   sobre el proyecto base del profesor). Mismas columnas y misma regla de
-  deduplicacion -- por (actividad, metodo_heuristica, layout) -- que
-  experimentos/_resultados.py, reimplementadas aqui para no depender de
-  esa carpeta.
+  deduplicacion que la tabla oficial del repositorio: por
+  (actividad, metodo_heuristica, layout).
   """
   import csv
   import os
@@ -680,7 +678,7 @@ def _guardar_fila_demo(fila):
 def _demo_estado(layout_name):
   """
   Construye el GameState inicial para un layout (numGhostAgents=0, igual
-  que todos los scripts de experimentos/). Import local de layout y pacman
+  en las 11 actividades). Import local de layout y pacman
   (no al inicio del archivo): pacman.py ya hace 'import searchAgents' a
   nivel de modulo, asi que un 'import pacman' de searchAgents.py a nivel de
   modulo formaria un ciclo; como import local, para cuando esta funcion se
@@ -698,8 +696,8 @@ def _demo_estado(layout_name):
 
 
 def demo_actividad1():
-  """Replica experimentos/actividad1_exploracion.py. No genera fila (esta
-  actividad solo explora componentes, no mide nada)."""
+  """Actividad 1. No genera fila (esta actividad solo explora componentes,
+  no mide nada)."""
   import layout as layout_module
 
   layout_name = "tinyMaze"
@@ -749,7 +747,7 @@ def demo_actividad1():
 
 
 def demo_actividad2(layout_name="mediumMaze"):
-  """Replica experimentos/actividad2_ucs.py."""
+  """Actividad 2."""
   state = _demo_estado(layout_name)
   problem = PositionSearchProblem(state, warn=False)
 
@@ -785,8 +783,7 @@ def demo_actividad2(layout_name="mediumMaze"):
 
 
 def demo_actividad3():
-  """Replica experimentos/actividad3_astar_verificacion.py (solo verifica,
-  no genera fila)."""
+  """Actividad 3 (solo verifica, no genera fila)."""
   layouts = ["tinyMaze", "mediumMaze", "mediumClassic", "openClassic", "trickyClassic"]
 
   def _correr(layout_name, funcion, heuristica=None):
@@ -828,7 +825,7 @@ def demo_actividad3():
 
 
 def demo_actividad4(layout_name="mediumClassic"):
-  """Replica experimentos/actividad4_astar_nulo.py."""
+  """Actividad 4."""
 
   def _medir(nombre, funcion):
     state = _demo_estado(layout_name)
@@ -878,7 +875,7 @@ def demo_actividad4(layout_name="mediumClassic"):
 
 
 def demo_actividad5(layout_name="mediumClassic"):
-  """Replica experimentos/actividad5_manhattan.py."""
+  """Actividad 5."""
 
   def _medir(nombre, funcion):
     state = _demo_estado(layout_name)
@@ -931,7 +928,7 @@ def demo_actividad5(layout_name="mediumClassic"):
 
 
 def demo_actividad6(layout_name="mediumClassic"):
-  """Replica experimentos/actividad6_euclidiana.py."""
+  """Actividad 6."""
 
   def _medir(nombre, heuristica):
     state = _demo_estado(layout_name)
@@ -987,7 +984,7 @@ def demo_actividad6(layout_name="mediumClassic"):
 
 
 def demo_actividad7():
-  """Replica experimentos/actividad7_corners_estado.py."""
+  """Actividad 7."""
   layout_principal = "tinyCorners"
 
   def _probar_conectividad_mediumCorners():
@@ -1038,7 +1035,7 @@ def demo_actividad7():
 
 
 def demo_actividad8():
-  """Replica experimentos/actividad8_corners_heuristica.py."""
+  """Actividad 8."""
   layout_principal = "tinyCorners"
   costo_optimo_conocido = 22  # de la Actividad 7 (UCS sobre tinyCorners)
 
@@ -1107,7 +1104,7 @@ def demo_actividad8():
 
 
 def demo_actividad9():
-  """Replica experimentos/actividad9_corners_comparacion.py."""
+  """Actividad 9."""
   layout_principal = "tinyCorners"
 
   def _nuevo_problema():
@@ -1180,7 +1177,7 @@ def demo_actividad9():
 
 
 def demo_actividad10():
-  """Replica experimentos/actividad10_food_baseline.py."""
+  """Actividad 10."""
   layouts = ["tinySearch", "testClassic"]
 
   def _medir(layout_name, nombre, funcion_busqueda):
@@ -1238,7 +1235,7 @@ def demo_actividad10():
 
 
 def demo_actividad11():
-  """Replica experimentos/actividad11_food_heuristic.py."""
+  """Actividad 11."""
   layouts_comparacion = ["tinySearch", "testClassic"]
   layouts_cache = ["testClassic", "capsuleClassic"]
   repeticiones_cache = 5

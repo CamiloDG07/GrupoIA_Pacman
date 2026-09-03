@@ -4,7 +4,8 @@
 
 ## Qué se hizo
 Se ejecutó A* con `euclideanHeuristic` (ya provista) y se comparó contra `nullHeuristic` y
-`manhattanHeuristic` sobre `mediumClassic` con `experimentos/actividad6_euclidiana.py`: mismo
+`manhattanHeuristic` sobre `mediumClassic` con `demo_actividad6()` (`pacman/searchAgents.py`,
+`python searchAgents.py 6`): mismo
 costo óptimo (12) en las tres, pero Manhattan expande 15 nodos, Euclidiana 16 y h=0 expande 69
 (números corregidos tras el fix del desempate en la cola de prioridad — ver Actividad 3). Guardado
 en `resultados/resultados.csv` (actividad=6).

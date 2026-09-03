@@ -31,6 +31,9 @@ esta es la clase que se está "explorando".
 
 ```python
 class PositionSearchProblem(search.SearchProblem):
+    def __init__(self, gameState, costFn = lambda x: 1, goal=(1,1), start=None, warn=True):
+        ...
+
     def getStartState(self):
         return self.startState
 
@@ -54,11 +57,15 @@ class PositionSearchProblem(search.SearchProblem):
 **Qué hace:** define el problema de búsqueda más simple posible: el estado
 es solo una posición `(x, y)`, hay 4 acciones posibles (las direcciones
 cardinales), un sucesor es válido si la celda vecina no es pared, y la meta
-es una única posición fija (`self.goal`, por defecto `(1,1)`).
+es una única posición fija (`self.goal`). El goal y el costo de cada paso
+no se calculan a mano: son los parámetros `goal` y `costFn` de
+`__init__` (línea 131), con valor por defecto `goal=(1,1)` y
+`costFn = lambda x: 1` (esa lambda ignora el estado que recibe y siempre
+devuelve 1) si no se especifica lo contrario al construir el problema.
 
 **Cómo funciona:** por cada dirección, calcula la celda vecina sumando el
 vector de esa dirección a la posición actual; si esa celda no tiene pared,
-la agrega como sucesor con costo 1 (o el que devuelva `costFn`).
+la agrega como sucesor con costo `self.costFn(nextState)` (1 por defecto).
 
 **Por qué es la parte clave:** no se modificó nada aquí (el profesor ya la
 entrega completa), pero es la pieza que hay que entender **antes** de
@@ -429,8 +436,8 @@ aporta información útil, no es solo más cálculo por gusto.
 
 ## Actividad 9. Experimento comparativo (esquinas)
 
-No hay código nuevo (se reutiliza todo lo de la Actividad 8; el script
-`experimentos/actividad9_corners_comparacion.py` corre las 4 estrategias
+No hay código nuevo (se reutiliza todo lo de la Actividad 8; la función
+`demo_actividad9()` al final de `pacman/searchAgents.py` corre las 4 estrategias
 por separado y calcula el factor de reducción).
 
 **Qué hace el experimento:** corre UCS, A*+h=0, A*+básica y A*+propuesta
